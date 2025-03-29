@@ -1,42 +1,43 @@
-import { gql } from 'apollo-server-express';
+import gql from "graphql-tag";
 
-const typeDefs = gql`
-  extend type User @key(fields: "id") {
-    id: ID! @external
-    role: String! @external
-    createdAt: String! @external
+export const typeDefs = gql`
+  extend type Query {
+    getAllPosts: [CommunityPost]
+    getAllHelpRequests: [HelpRequest]
   }
 
-  type CommunityPost {
+  type CommunityPost @key(fields: "id") {
     id: ID!
-    author: User!
+    author: ID!
     title: String!
     content: String!
     category: String!
-    createdAt: String!
-  }
-
-  type HelpRequest {
-    id: ID!
-    author: User!
-    description: String!
-    location: String
-    isResolved: Boolean!
-    volunteers: [User]
+    aiSummary: String
     createdAt: String!
     updatedAt: String
   }
 
-  extend type Query {
-    getCommunityPosts: [CommunityPost]
-    getHelpRequests: [HelpRequest]
+  type HelpRequest @key(fields: "id") {
+    id: ID!
+    author: ID!
+    description: String!
+    location: String
+    isResolved: Boolean!
+    volunteers: [ID!]
+    createdAt: String!
+    updatedAt: String
   }
 
   extend type Mutation {
     createPost(title: String!, content: String!, category: String!): CommunityPost
+    updatePost(id: ID!, title: String, content: String, category: String): CommunityPost
+    deletePost(id: ID!): Boolean
+    
     createHelpRequest(description: String!, location: String): HelpRequest
-    resolveHelpRequest(id: ID!): Boolean
-    volunteerForHelpRequest(id: ID!): HelpRequest
+    updateHelpRequest(id: ID!, description: String, location: String): HelpRequest
+    deleteHelpRequest(id: ID!): Boolean
+    resolveHelpRequest(id: ID!): HelpRequest
+    volunteerForHelp(id: ID!): HelpRequest
   }
 `;
 

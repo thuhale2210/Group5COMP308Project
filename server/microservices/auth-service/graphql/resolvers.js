@@ -1,100 +1,84 @@
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
-import { config } from '../config/config.js';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
 
 const resolvers = {
-    Query: {
-        currentUser: (_, __, context) => {
-            console.log("🔍 Debugging context:", context);
-            const { req } = context;
-
-            if (!req || !req.cookies) {
-                console.log("🚨 Request object is missing!");
-                return null;
-            }
-
-            const token = req.cookies.token;
-            if (!token) {
-                return null;
-            }
-
-            try {
-                console.log("🔍 JWT_SECRET in resolvers.js:", config.JWT_SECRET);
-                const decoded = jwt.verify(token, config.JWT_SECRET);
-                return { username: decoded.username };
-            } catch (error) {
-                console.error("Error verifying token:", error);
-                return null;
-            }
-        },
+  Query: {
+    getUser: async (_, { id }) => {
+      try {
+        const user = await User.findById(id);
+        if (!user) {
+          throw new Error("User not found");
+        }
+        return user;
+      } catch (error) {
+        console.error("❌ Error fetching user by ID:", error);
+        throw new Error("Failed to fetch user");
+      }
     },
 
-    Mutation: {
-        login: async (_, { username, password }, { res }) => {
-            const user = await User.findOne({ username });
-            if (!user) {
-                throw new Error('User not found');
-            }
+    currentUser: async (_, __, { user }) => {
+      if (!user) {
+        throw new Error("Unauthorized: No valid user found");
+      }
+      console.log("✅ Returning authenticated user:", user);
+      return user;
+    }
+  },
 
-            console.log("🔍 Stored Hashed Password from DB:", user.password);
-            console.log("🔍 Entered Password:", password);
+  Mutation: {
+    async signup(_, { username, email, password, role }, { res }) {
+      const existingUser = await User.findOne({ email });
+      if (existingUser) throw new Error("Email already exists");
 
-            const match = await user.comparePassword(password);
-            console.log("🔍 bcrypt.compare() result:", match);
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = new User({ username, email, password: hashedPassword, role });
+      await user.save();
 
-            if (!match) {
-                throw new Error('Invalid password');
-            }
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-            // ✅ Ensure JWT_SECRET is set correctly
-            if (!config.JWT_SECRET) {
-                console.error("🚨 Missing JWT_SECRET in config!");
-                throw new Error("Server configuration error");
-            }
+      res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'Lax',      // Use 'None' only if you're crossing origins
+        secure: false,        // true if you're using HTTPS
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      });
 
-            // ✅ Fix: Generate JWT token properly
-            const token = jwt.sign(
-                { userId: user.id, username: user.username, email: user.email, role: user.role },
-                config.JWT_SECRET,
-                { expiresIn: '1d' }
-            );
-
-            if (!token) {
-                throw new Error("Failed to generate token");
-            }
-
-            // ✅ Fix: Set cookie properly
-            res.cookie('token', token, {
-                httpOnly: true,
-                maxAge: 24 * 60 * 60 * 1000,
-            });
-
-            console.log("✅ Generated Token:", token);
-
-            return {
-                token,
-                user: {
-                    id: user.id,
-                    username: user.username,
-                    email: user.email,
-                    role: user.role
-                }
-            };
-        },
-
-        register: async (_, { username, email, password, role }) => {
-            const existingUser = await User.findOne({ username });
-            if (existingUser) {
-                throw new Error('Username is already taken');
-            }
-
-            const newUser = new User({ username, email, password, role });
-            await newUser.save();
-
-            console.log("✅ New user registered:", newUser);
-            return true;
-        },
+      return { user, token };
     },
+
+    async login(_, { email, password }, { res }) {
+      const user = await User.findOne({ email });
+      if (!user) throw new Error("User not found");
+
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) throw new Error("Invalid password");
+
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+
+      res.cookie('token', token, {
+        httpOnly: true,
+        sameSite: 'Lax',      // Use 'None' only if you're crossing origins
+        secure: false,        // true if you're using HTTPS
+        maxAge: 24 * 60 * 60 * 1000, // 1 day
+      });
+
+      console.log("🔍 User to return:", user);
+
+      return { user, token };
+    },
+
+    logout: async (_, __, { res }) => {
+      res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'Lax',
+        secure: false,
+      });
+      console.log("🍪 Cookie cleared")
+      return true;
+    }
+  }
 };
 
 export default resolvers;
+

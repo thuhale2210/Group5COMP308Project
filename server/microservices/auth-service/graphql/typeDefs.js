@@ -1,28 +1,30 @@
-// server/microservices/auth-service/graphql/typeDefs.js
-// GraphQL type definitions
-const typeDefs = `#graphql
-  type User {
-  id: ID!
-  username: String!
-  email: String!
-  role: String!
-}
+import gql from "graphql-tag";
 
-type AuthPayload {
-  token: String!  # This must not be null!
-  user: User!
-}
+export const typeDefs = gql`
+  extend schema
+    @link(url: "https://specs.apollo.dev/federation/v2.5", import: ["@key"])
 
-type Query {
-  currentUser: User
-}
+  extend type Query {
+    getUser(id: ID!): User
+    currentUser: User
+  }
 
-type Mutation {
-  login(username: String!, password: String!): AuthPayload  # Ensure the return type is AuthPayload
-  register(username: String!, email: String!, password: String!, role: String!): Boolean
-}
+  type User @key(fields: "id") {
+    id: ID!
+    username: String!
+    email: String!
+    role: String!
+    createdAt: String!
+  }
 
+  type AuthPayload {
+    user: User!
+    token: String!
+  }
+
+  extend type Mutation {
+    signup(username: String!, email: String!, password: String!, role: String!): AuthPayload
+    login(email: String!, password: String!): AuthPayload
+    logout: Boolean
+  }
 `;
-
-// Export as an ES Module
-export default typeDefs;

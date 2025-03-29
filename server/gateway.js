@@ -1,70 +1,97 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
-import express from 'express';
-import { ApolloServer } from '@apollo/server';
-import { expressMiddleware } from '@apollo/server/express4';
-import { ApolloGateway, IntrospectAndCompose } from '@apollo/gateway';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
-//
+import express from "express";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloGateway, IntrospectAndCompose, RemoteGraphQLDataSource } from "@apollo/gateway";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:3001",
+  "http://localhost:3002",
+];
 
 const app = express();
-
-// ✅ Fix: Add middleware to parse JSON requests
+app.use(cors({ origin: allowedOrigins, credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Enable CORS and Cookie Parsing
-app.use(cors({
-    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002'],
-    credentials: true,
-}));
-app.use(cookieParser());
+// ✅ Custom Data Source to forward headers
+class AuthenticatedDataSource extends RemoteGraphQLDataSource {
+  willSendRequest({ request, context }) {
+    if (context.token) {
+      console.log("✅ Setting Authorization header:", context.token);
+      request.http.headers.set("authorization", `Bearer ${context.token}`);
+    }
+  }
+}
 
-// Configure the Apollo Gateway for microservices
 const gateway = new ApolloGateway({
-    supergraphSdl: new IntrospectAndCompose({
-        subgraphs: [
-            { name: 'auth', url: 'http://localhost:4001/graphql' },
-            { name: 'community-engagement', url: 'http://localhost:4002/graphql' },
-        ],
-    }),
+  supergraphSdl: new IntrospectAndCompose({
+    subgraphs: [
+      { name: "auth-service", url: "http://localhost:4001/graphql" },
+      { name: "community-engagement-service", url: "http://localhost:4002/graphql" },
+    ],
+  }),
+  buildService({ url }) {
+    return new AuthenticatedDataSource({ url });
+  },
 });
 
-// Initialize Apollo Server
 const server = new ApolloServer({
-    gateway,
-    introspection: true,
+  gateway,
+  introspection: true,
+  plugins: [
+    {
+      async requestDidStart() {
+        return {
+          async willSendRequest({ request, context }) {
+            if (context.token) {
+              request.http.headers.set("authorization", `Bearer ${context.token}`);
+              console.log("✅ Forwarding token to subgraph:", context.token); // Add this log
+            } else {
+              console.warn("❌ No token found in context at gateway!");
+            }
+          }
+        };
+      }
+    }
+  ]
 });
+
 
 async function startServer() {
-    await server.start();
+  await server.start();
 
-    // Apply Express middleware for Apollo Server
-    app.use('/graphql', expressMiddleware(server));
+  app.use(
+    "/graphql",
+    expressMiddleware(server, {
+      context: async ({ req }) => {
+        const token = req.cookies?.token;
+        return { token };
+      },
+      plugins: [
+        {
+          async requestDidStart() {
+            return {
+              async willSendRequest({ request, context }) {
+                if (context.token) {
+                  request.http.headers.set('authorization', `Bearer ${context.token}`);
+                }
+              }
+            };
+          }
+        }
+      ]
+    })
+  );
 
-    // Start Express server
-    app.listen(4000, () => {
-        console.log(`🚀 API Gateway ready at http://localhost:4000/graphql`);
-    });
+  app.listen(4000, () => {
+    console.log("🚀 Gateway running at http://localhost:4000/graphql");
+  });
 }
 
 startServer();
-
-// import express from 'express';
-// import { ApolloServer } from '@apollo/server';
-// import { ApolloGateway, IntrospectAndCompose } from '@apollo/gateway';
-
-// const gateway = new ApolloGateway({
-//     supergraphSdl: new IntrospectAndCompose({
-//         subgraphs: [
-//             { name: 'auth', url: 'http://localhost:4001/graphql' },
-//             { name: 'community-engagement', url: 'http://localhost:4002/graphql' },
-//         ],
-//     }),
-// });
-
-// const server = new ApolloServer({ gateway });
-
-// const app = express();
-// server.start().then

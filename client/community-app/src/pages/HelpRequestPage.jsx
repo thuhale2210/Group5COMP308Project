@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
-// ✅ Corrected query with nested fields for author and volunteers
 const GET_HELP_REQUESTS = gql`
   query {
     getAllHelpRequests {
@@ -66,7 +65,6 @@ function HelpRequestPage() {
   const [deleteHelpRequest] = useMutation(DELETE_HELP_REQUEST, {
     refetchQueries: [GET_HELP_REQUESTS],
   });
-
   const [resolveHelpRequest] = useMutation(RESOLVE_HELP_REQUEST, {
     refetchQueries: [GET_HELP_REQUESTS],
   });
@@ -81,9 +79,7 @@ function HelpRequestPage() {
 
     try {
       if (editingId) {
-        await updateHelpRequest({
-          variables: { id: editingId, description, location },
-        });
+        await updateHelpRequest({ variables: { id: editingId, description, location } });
         setEditingId(null);
       } else {
         await createHelpRequest({ variables: { description, location } });
@@ -120,9 +116,9 @@ function HelpRequestPage() {
   };
 
   return (
-    <div className="min-h-screen flex-col items-start p-6 max-w-full w-full mx-auto bg-white text-gray-900 rounded-xl shadow-md grid grid-cols-5 gap-6">
-      {/* Left Column: Create/Edit Form */}
-      <div className="col-span-2 bg-gray-100 p-6 rounded-lg shadow-md flex flex-col justify-between">
+    <div className="min-h-screen flex p-6 bg-gray-50 gap-6">
+      {/* Left Column: Form */}
+      <div className="w-2/5 max-w-md bg-gray-100 p-6 rounded-lg shadow-md sticky top-24 self-start h-fit">
         <h2 className="text-2xl font-bold mb-4">
           {editingId ? 'Edit Help Request' : 'Request Help'}
         </h2>
@@ -150,16 +146,20 @@ function HelpRequestPage() {
         </form>
       </div>
 
-      {/* Right Column: List of Requests */}
-      <div className="col-span-3 bg-gray-100 p-6 rounded-lg shadow-md">
-        <h3 className="text-2xl font-bold mb-4">Help Requests</h3>
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p className="text-red-500">Error fetching help requests</p>
-        ) : (
-          <div className="space-y-4">
-            {data.getAllHelpRequests.map((req) => (
+      {/* Right Column: Scrollable Requests */}
+      <div className="flex-1 bg-gray-100 rounded-lg shadow-md max-h-[80vh] overflow-y-auto">
+        {/* ✅ Sticky Header with extra height and opaque background */}
+        <div className="sticky top-0 z-30 bg-gray-100 px-6 py-6 shadow-md border-b min-h-[4.5rem]">
+          <h3 className="text-2xl font-bold">Help Requests</h3>
+        </div>
+
+        <div className="p-6 space-y-4">
+          {loading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p className="text-red-500">Error fetching help requests</p>
+          ) : (
+            data.getAllHelpRequests.map((req) => (
               <div key={req.id} className="p-4 bg-white border rounded shadow">
                 <strong className="text-blue-600 text-lg">{req.description}</strong>
                 <p className="mt-2"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
@@ -168,7 +168,7 @@ function HelpRequestPage() {
                 <p>
                   <strong>Volunteers:</strong>{' '}
                   {req.volunteers?.length > 0
-                    ? req.volunteers.map(v => v.username).join(', ')
+                    ? req.volunteers.map((v) => v.username).join(', ')
                     : 'None'}
                 </p>
                 <p>
@@ -203,9 +203,9 @@ function HelpRequestPage() {
                   </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

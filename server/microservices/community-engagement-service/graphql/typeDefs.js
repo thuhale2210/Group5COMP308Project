@@ -2,6 +2,8 @@
 import gql from "graphql-tag";
 
 const typeDefs = gql`
+  scalar DateTime
+
   extend schema
     @link(url: "https://specs.apollo.dev/federation/v2.5", import: ["@key"])
 
@@ -17,8 +19,8 @@ const typeDefs = gql`
     content: String!
     category: String!
     aiSummary: String
-    createdAt: String!
-    updatedAt: String
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   type HelpRequest @key(fields: "id") {
@@ -28,8 +30,8 @@ const typeDefs = gql`
     location: String
     isResolved: Boolean!
     volunteers: [User!]
-    createdAt: String!
-    updatedAt: String
+    createdAt: DateTime
+    updatedAt: DateTime
   }
 
   extend type User @key(fields: "id") {

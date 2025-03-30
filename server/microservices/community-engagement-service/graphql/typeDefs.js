@@ -1,6 +1,10 @@
+// community-engagement-service/graphql/typeDefs.js
 import gql from "graphql-tag";
 
-export const typeDefs = gql`
+const typeDefs = gql`
+  extend schema
+    @link(url: "https://specs.apollo.dev/federation/v2.5", import: ["@key"])
+
   extend type Query {
     getAllPosts: [CommunityPost]
     getAllHelpRequests: [HelpRequest]
@@ -8,7 +12,7 @@ export const typeDefs = gql`
 
   type CommunityPost @key(fields: "id") {
     id: ID!
-    author: ID!
+    author: User!
     title: String!
     content: String!
     category: String!
@@ -19,20 +23,24 @@ export const typeDefs = gql`
 
   type HelpRequest @key(fields: "id") {
     id: ID!
-    author: ID!
+    author: User!
     description: String!
     location: String
     isResolved: Boolean!
-    volunteers: [ID!]
+    volunteers: [User!]
     createdAt: String!
     updatedAt: String
+  }
+
+  extend type User @key(fields: "id") {
+    id: ID!
   }
 
   extend type Mutation {
     createPost(title: String!, content: String!, category: String!): CommunityPost
     updatePost(id: ID!, title: String, content: String, category: String): CommunityPost
     deletePost(id: ID!): Boolean
-    
+
     createHelpRequest(description: String!, location: String): HelpRequest
     updateHelpRequest(id: ID!, description: String, location: String): HelpRequest
     deleteHelpRequest(id: ID!): Boolean

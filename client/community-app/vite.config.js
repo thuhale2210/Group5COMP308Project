@@ -18,6 +18,7 @@ export default defineConfig({
     port: 3002,
     cors: true,
     strictPort: true,
+    historyApiFallback: true,
   },
   build: {
     modulePreload: false,

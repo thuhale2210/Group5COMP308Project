@@ -46,6 +46,11 @@ function UserComponent() {
                 console.error("Login failed: ", data);
                 return;
             }
+
+            localStorage.setItem("token", data.login.token);
+            localStorage.setItem("userId", user.id);
+            localStorage.setItem("role", user.role);
+
             window.dispatchEvent(new CustomEvent('loginSuccess', {
                 detail: { userId: user.id }
             }));
@@ -119,7 +124,7 @@ function UserComponent() {
                         </select>
 
                     )}
-                    
+
                     {authError && <p className="text-red-500 text-sm">{authError}</p>}
 
                     <button className="w-full bg-blue-500 text-white p-3 rounded-lg shadow-md hover:bg-blue-600 transition duration-300"

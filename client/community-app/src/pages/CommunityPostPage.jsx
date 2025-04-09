@@ -53,6 +53,7 @@ const ADD_REPLY = gql`
       replies {
         author {
           id
+          username
         }
         content
         createdAt

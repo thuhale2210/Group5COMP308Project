@@ -52,7 +52,7 @@ function MainApp() {
       <Route
         path="/"
         element={
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div>Loading Community App...</div>}>
             {isLoggedIn ? <CommunityApp /> : <UserApp />}
           </Suspense>
         }

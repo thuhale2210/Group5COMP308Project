@@ -1,4 +1,3 @@
-// ✅ CommunityPostPage.jsx
 import React, { useState } from 'react';
 import { useQuery, useMutation, gql } from '@apollo/client';
 
@@ -13,6 +12,14 @@ const GET_POSTS = gql`
         id
         username
       }
+      replies {
+        author {
+          id
+          username
+        }
+        content
+        createdAt
+      }
     }
   }
 `;
@@ -21,13 +28,6 @@ const CREATE_POST = gql`
   mutation CreatePost($title: String!, $content: String!, $category: String!) {
     createPost(title: $title, content: $content, category: $category) {
       id
-      title
-      content
-      category
-      author {
-        id
-        username
-      }
     }
   }
 `;
@@ -36,13 +36,6 @@ const UPDATE_POST = gql`
   mutation UpdatePost($id: ID!, $title: String, $content: String, $category: String) {
     updatePost(id: $id, title: $title, content: $content, category: $category) {
       id
-      title
-      content
-      category
-      author {
-        id
-        username
-      }
     }
   }
 `;
@@ -53,28 +46,70 @@ const DELETE_POST = gql`
   }
 `;
 
+const ADD_REPLY = gql`
+  mutation AddReply($postId: ID!, $content: String!) {
+    addReply(postId: $postId, content: $content) {
+      id
+      replies {
+        author {
+          id
+        }
+        content
+        createdAt
+      }
+    }
+  }
+`;
+
+const EDIT_REPLY = gql`
+  mutation EditReply($postId: ID!, $replyIndex: Int!, $content: String!) {
+    editReply(postId: $postId, replyIndex: $replyIndex, content: $content) {
+      id
+      replies {
+        content
+        createdAt
+        author {
+          id
+          username
+        }
+      }
+    }
+  }
+`;
+
+const DELETE_REPLY = gql`
+  mutation DeleteReply($postId: ID!, $replyIndex: Int!) {
+    deleteReply(postId: $postId, replyIndex: $replyIndex) {
+      id
+    }
+  }
+`;
+
 function CommunityPost() {
   const { loading, error, data } = useQuery(GET_POSTS);
-  const [createPost, { loading: creating }] = useMutation(CREATE_POST, { refetchQueries: [GET_POSTS] });
+  const [createPost] = useMutation(CREATE_POST, { refetchQueries: [GET_POSTS] });
   const [deletePost] = useMutation(DELETE_POST, { refetchQueries: [GET_POSTS] });
   const [updatePost] = useMutation(UPDATE_POST, { refetchQueries: [GET_POSTS] });
+  const [addReply] = useMutation(ADD_REPLY, { refetchQueries: [GET_POSTS] });
+  const [editReply] = useMutation(EDIT_REPLY, { refetchQueries: [GET_POSTS] });
+  const [deleteReply] = useMutation(DELETE_REPLY, { refetchQueries: [GET_POSTS] });
 
   const [editingId, setEditingId] = useState(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('News');
+  const [replyContent, setReplyContent] = useState({});
+  const [editingReply, setEditingReply] = useState({});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
-
     if (editingId) {
       await updatePost({ variables: { id: editingId, title, content, category } });
       setEditingId(null);
     } else {
       await createPost({ variables: { title, content, category } });
     }
-
     setTitle('');
     setContent('');
   };
@@ -84,6 +119,12 @@ function CommunityPost() {
     setContent(post.content);
     setCategory(post.category);
     setEditingId(post.id);
+  };
+
+  const handleReply = async (postId) => {
+    if (!replyContent[postId]) return;
+    await addReply({ variables: { postId, content: replyContent[postId] } });
+    setReplyContent((prev) => ({ ...prev, [postId]: '' }));
   };
 
   return (
@@ -97,7 +138,7 @@ function CommunityPost() {
             <option value="News">News</option>
             <option value="Discussion">Discussion</option>
           </select>
-          <button className="bg-blue-500 text-white py-2 rounded" disabled={creating}>{editingId ? 'Update' : 'Submit'} Post</button>
+          <button className="bg-blue-500 text-white py-2 rounded">{editingId ? 'Update' : 'Submit'} Post</button>
         </form>
       </div>
 
@@ -116,6 +157,93 @@ function CommunityPost() {
                 <div className="flex gap-2 mt-4">
                   <button onClick={() => handleEdit(post)} className="bg-yellow-400 px-3 py-1 rounded text-white">Edit</button>
                   <button onClick={() => deletePost({ variables: { id: post.id } })} className="bg-red-500 px-3 py-1 rounded text-white">Delete</button>
+                </div>
+                <div className="mt-4">
+                  <h5 className="font-semibold text-sm mb-2">Replies:</h5>
+                  {post.replies?.map((r, i) => (
+                    <div key={i} className="ml-4 border-l pl-4 mb-2 text-sm text-gray-800">
+                      <div className="flex justify-between items-center">
+                        <p>
+                          <strong>{r.author?.username || 'Anonymous'}:</strong>
+                          {editingReply[`${post.id}-${i}`] ? (
+                            <input
+                              className="ml-2 border rounded px-1 text-sm"
+                              value={editingReply[`${post.id}-${i}`]}
+                              onChange={(e) =>
+                                setEditingReply((prev) => ({ ...prev, [`${post.id}-${i}`]: e.target.value }))
+                              }
+                            />
+                          ) : (
+                            <span className="ml-2">{r.content}</span>
+                          )}
+                        </p>
+                        <div className="flex gap-1 ml-2">
+                          {editingReply[`${post.id}-${i}`] ? (
+                            <>
+                              <button
+                                className="text-green-600 text-xs"
+                                onClick={() => {
+                                  editReply({
+                                    variables: {
+                                      postId: post.id,
+                                      replyIndex: i,
+                                      content: editingReply[`${post.id}-${i}`],
+                                    },
+                                  });
+                                  setEditingReply((prev) => ({ ...prev, [`${post.id}-${i}`]: null }));
+                                }}
+                              >
+                                Save
+                              </button>
+                              <button
+                                className="text-gray-500 text-xs"
+                                onClick={() =>
+                                  setEditingReply((prev) => ({ ...prev, [`${post.id}-${i}`]: null }))
+                                }
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                className="text-yellow-500 text-xs"
+                                onClick={() =>
+                                  setEditingReply((prev) => ({
+                                    ...prev,
+                                    [`${post.id}-${i}`]: r.content,
+                                  }))
+                                }
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="text-red-500 text-xs"
+                                onClick={() =>
+                                  deleteReply({ variables: { postId: post.id, replyIndex: i } })
+                                }
+                              >
+                                Delete
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500">{new Date(r.createdAt).toLocaleString()}</p>
+                    </div>
+                  ))}
+                  <div className="flex gap-2 mt-2">
+                    <input
+                      type="text"
+                      className="border p-1 rounded flex-1"
+                      value={replyContent[post.id] || ''}
+                      onChange={(e) => setReplyContent({ ...replyContent, [post.id]: e.target.value })}
+                      placeholder="Write a reply..."
+                    />
+                    <button className="bg-green-600 text-white px-3 py-1 rounded" onClick={() => handleReply(post.id)}>
+                      Reply
+                    </button>
+                  </div>
                 </div>
               </div>
             ))

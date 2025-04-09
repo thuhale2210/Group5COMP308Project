@@ -11,6 +11,7 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
   "http://localhost:3002",
+  "http://localhost:3003",
 ];
 
 const app = express();
@@ -19,7 +20,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Custom Data Source to forward headers
+// Custom Data Source to forward headers
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }) {
     if (context.token) {
@@ -34,6 +35,7 @@ const gateway = new ApolloGateway({
     subgraphs: [
       { name: "auth-service", url: "http://localhost:4001/graphql" },
       { name: "community-engagement-service", url: "http://localhost:4002/graphql" },
+      { name: 'business-event-service', url: 'http://localhost:4003/graphql' },
     ],
   }),
   buildService({ url }) {
@@ -51,7 +53,7 @@ const server = new ApolloServer({
           async willSendRequest({ request, context }) {
             if (context.token) {
               request.http.headers.set("authorization", `Bearer ${context.token}`);
-              console.log("✅ Forwarding token to subgraph:", context.token); // Add this log
+              console.log("✅ Forwarding token to subgraph:", context.token);
             } else {
               console.warn("❌ No token found in context at gateway!");
             }

@@ -6,8 +6,7 @@ const HelpRequestSchema = new mongoose.Schema({
   location: { type: String },
   isResolved: { type: Boolean, default: false },
   volunteers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-}, { timestamps: true }); // 👈 Add this
-
+}, { timestamps: true });
 
 export default mongoose.model("HelpRequest", HelpRequestSchema);
 

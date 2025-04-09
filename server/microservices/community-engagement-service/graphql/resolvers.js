@@ -1,4 +1,3 @@
-// ✅ community-engagement-service/resolvers.js
 import { GraphQLDateTime } from 'graphql-scalars';
 import CommunityPost from "../models/CommunityPost.js";
 import HelpRequest from "../models/HelpRequest.js";
@@ -33,6 +32,47 @@ const resolvers = {
       if (!post || post.author.toString() !== user.id) throw new Error("Permission Denied");
       await CommunityPost.findByIdAndDelete(id);
       return true;
+    },
+
+    addReply: async (_, { postId, content }, { user }) => {
+      if (!user?.id) throw new Error('Unauthorized');
+      const post = await CommunityPost.findById(postId);
+      if (!post) throw new Error('Post not found');
+
+      post.replies.push({
+        author: user.id,
+        content,
+        createdAt: new Date(),
+      });
+
+      await post.save();
+      return post;
+    },
+
+    editReply: async (_, { postId, replyIndex, content }, { user }) => {
+      if (!user?.id) throw new Error('Unauthorized');
+      const post = await CommunityPost.findById(postId);
+      if (!post || !post.replies[replyIndex]) throw new Error('Reply not found');
+
+      const reply = post.replies[replyIndex];
+      if (reply.author.toString() !== user.id) throw new Error('Permission Denied');
+
+      post.replies[replyIndex].content = content;
+      await post.save();
+      return post;
+    },
+
+    deleteReply: async (_, { postId, replyIndex }, { user }) => {
+      if (!user?.id) throw new Error('Unauthorized');
+      const post = await CommunityPost.findById(postId);
+      if (!post || !post.replies[replyIndex]) throw new Error('Reply not found');
+
+      const reply = post.replies[replyIndex];
+      if (reply.author.toString() !== user.id) throw new Error('Permission Denied');
+
+      post.replies.splice(replyIndex, 1);
+      await post.save();
+      return post;
     },
 
     createHelpRequest: async (_, { description, location }, { user }) => {
@@ -77,6 +117,14 @@ const resolvers = {
 
   CommunityPost: {
     author: (parent) => ({ __typename: "User", id: parent.author.toString() }),
+    replies: (parent) =>
+      parent.replies.map((reply) => ({
+        id: reply._id.toString(),
+        author: { __typename: "User", id: reply.author.toString() },
+        content: reply.content,
+        createdAt: reply.createdAt,
+        updatedAt: reply.updatedAt,
+      })),
   },
 
   HelpRequest: {

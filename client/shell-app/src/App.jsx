@@ -52,7 +52,7 @@ function MainApp() {
       <Route
         path="/"
         element={
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div>Loading Community App...</div>}>
             {isLoggedIn ? <CommunityApp /> : <UserApp />}
           </Suspense>
         }
@@ -63,7 +63,11 @@ function MainApp() {
 
 export default function App() {
   return (
-    <Router>
+    <Router
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}>
       <MainApp />
     </Router>
   );

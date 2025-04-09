@@ -1,4 +1,3 @@
-// community-engagement-service/graphql/typeDefs.js
 import gql from "graphql-tag";
 
 const typeDefs = gql`
@@ -19,6 +18,15 @@ const typeDefs = gql`
     content: String!
     category: String!
     aiSummary: String
+    replies: [Reply!]
+    createdAt: DateTime
+    updatedAt: DateTime
+  }
+
+  type Reply {
+    id: ID!
+    author: User!
+    content: String!
     createdAt: DateTime
     updatedAt: DateTime
   }
@@ -42,6 +50,10 @@ const typeDefs = gql`
     createPost(title: String!, content: String!, category: String!): CommunityPost
     updatePost(id: ID!, title: String, content: String, category: String): CommunityPost
     deletePost(id: ID!): Boolean
+
+    addReply(postId: ID!, content: String!): CommunityPost
+    editReply(postId: ID!, replyIndex: Int!, content: String!): CommunityPost
+    deleteReply(postId: ID!, replyIndex: Int!): CommunityPost
 
     createHelpRequest(description: String!, location: String): HelpRequest
     updateHelpRequest(id: ID!, description: String, location: String): HelpRequest

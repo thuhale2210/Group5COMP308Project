@@ -77,7 +77,7 @@ pipeline {
                     withSonarQubeEnv('SonarScanner') {
                         sh '''
                             PATH=/opt/homebrew/bin:$PATH sonar-scanner \
-                                -Dsonar.projectKey=comp308-project \
+                                -Dsonar.projectKey=group5-comp308-project \
                                 -Dsonar.sources=server,client \
                                 -Dsonar.host.url=http://localhost:9000 \
                                 -Dsonar.login=$SONAR_TOKEN

@@ -8,6 +8,7 @@ const GET_POSTS = gql`
       title
       content
       category
+      aiSummary
       author {
         id
         username
@@ -154,6 +155,11 @@ function CommunityPost() {
                 <h4 className="text-lg text-blue-600 font-semibold">{post.title}</h4>
                 <p><strong>Category:</strong> {post.category}</p>
                 <p><strong>Author:</strong> {post.author?.username || 'Unknown'}</p>
+                {post.aiSummary && (
+                  <p className="mt-2 italic text-sm text-blue-700">
+                    <strong>AI Summary:</strong> {post.aiSummary}
+                  </p>
+                )}
                 <p className="text-gray-700 mt-2">{post.content}</p>
                 <div className="flex gap-2 mt-4">
                   <button onClick={() => handleEdit(post)} className="bg-yellow-400 px-3 py-1 rounded text-white">Edit</button>

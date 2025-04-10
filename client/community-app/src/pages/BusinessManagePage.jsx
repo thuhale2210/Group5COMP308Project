@@ -19,6 +19,7 @@ const GET_REVIEWS = gql`
       id
       rating
       comment
+      sentiment
       businessResponse {
         text
         respondedAt
@@ -170,6 +171,19 @@ export default function BusinessManagePage() {
                                 <li key={review.id} className="border p-3 rounded bg-white">
                                     <p className="font-semibold">⭐ {review.rating}</p>
                                     <p className="mb-2">{review.comment}</p>
+
+                                    {/* Sentiment Display */}
+                                    {review.sentiment && (
+                                      <span
+                                        className={`inline-block text-xs font-semibold mb-1 px-2 py-1 rounded-full ${
+                                          review.sentiment.toUpperCase() === 'NEGATIVE'
+                                            ? 'bg-red-100 text-red-700'
+                                            : 'bg-green-100 text-green-700'
+                                        }`}
+                                      >
+                                        Sentiment: {review.sentiment}
+                                      </span>
+                                    )}
 
                                     {editingResponseId === review.id ? (
                                         <div className="space-y-2">

@@ -1,6 +1,7 @@
 import Business from '../models/Business.js';
 import Review from '../models/Review.js';
 import Event from '../models/Event.js';
+import { analyzeSentiment } from '../utils/sentiment.js';
 
 const resolvers = {
     Query: {
@@ -36,11 +37,21 @@ const resolvers = {
                 { new: true }
             ),
 
+        // createReview: async (_, args, context) => {
+        //     if (!context.user) throw new Error('Unauthorized');
+        //     return await Review.create({ ...args, author: context.user.id });
+        // },
         createReview: async (_, args, context) => {
             if (!context.user) throw new Error('Unauthorized');
-            return await Review.create({ ...args, author: context.user.id });
+        
+            const sentiment = await analyzeSentiment(args.comment || '');
+            return await Review.create({
+                ...args,
+                author: context.user.id,
+                sentiment,
+            });
         },
-
+     
         updateReview: async (_, { id, ...update }) =>
             await Review.findByIdAndUpdate(id, update, { new: true }),
 

@@ -24,6 +24,7 @@ export default function ReviewList({ businessId }) {
             {data.getReviews.map((r) => (
                 <div key={r.id} className="border p-2 rounded">
                     <p className="font-semibold">⭐ {r.rating}</p>
+
                     <p>{r.comment}</p>
                     {r.businessResponse?.text && (
                         <div className="mt-2 text-sm text-gray-700">

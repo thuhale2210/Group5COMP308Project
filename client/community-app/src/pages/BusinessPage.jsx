@@ -1,6 +1,5 @@
 import { gql, useQuery } from '@apollo/client';
 import { useState } from 'react';
-import BusinessCard from '../components/BusinessCard';
 import BusinessDetailPage from './BusinessDetailPage';
 
 const GET_BUSINESSES = gql`
@@ -18,32 +17,37 @@ export default function BusinessPage() {
   const { loading, error, data } = useQuery(GET_BUSINESSES);
   const [selectedBiz, setSelectedBiz] = useState(null);
 
-  if (loading) return <p>Loading businesses...</p>;
-  if (error) return <p>Error loading businesses.</p>;
+  if (loading) return <p className="text-zinc-400 p-4">Loading businesses...</p>;
+  if (error) return <p className="text-red-400 p-4">Error loading businesses.</p>;
 
   return (
-<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 text-white">
-  {!selectedBiz ? (
-    <div className="max-w-5xl mx-auto">
-      <h2 className="text-3xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-purple-500 drop-shadow">
-        Your Businesses
-      </h2>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data.getBusinesses.map((biz) => (
-          <div
-            key={biz.id}
-            className="cursor-pointer bg-zinc-900/70 border border-zinc-800 rounded-xl p-4 shadow-md hover:shadow-xl transition-all hover:-translate-y-1"
-            onClick={() => setSelectedBiz(biz)}
-          >
-            <h3 className="text-xl font-semibold text-cyan-400">{biz.name}</h3>
-            <p className="text-zinc-400 mt-2 text-sm">{biz.description?.slice(0, 80)}...</p>
+    <div className="min-h-screen bg-zinc-950 text-white p-6">
+      {!selectedBiz ? (
+        <div className="max-w-6xl mx-auto">
+          {/* Section Header */}
+          <h2 className="text-3xl font-bold mb-6 text-white bg-clip-text text-transparent drop-shadow">
+            All Businesses in the area
+          </h2>
+
+          {/* Grid of Business Cards */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {data.getBusinesses.map((biz) => (
+              <div
+                key={biz.id}
+                onClick={() => setSelectedBiz(biz)}
+                className="cursor-pointer bg-white/5 backdrop-blur-md p-5 rounded-2xl shadow-md transition-all hover:shadow-lg hover:-translate-y-1"
+              >
+                <h3 className="text-xl font-bold text-purple-400">{biz.name}</h3>
+                <p className="text-zinc-400 text-md leading-relaxed">
+                  {biz.description?.slice(0, 100)}...
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <BusinessDetailPage business={selectedBiz} onBack={() => setSelectedBiz(null)} />
+      )}
     </div>
-  ) : (
-    <BusinessDetailPage business={selectedBiz} onBack={() => setSelectedBiz(null)} />
-  )}
-</div>
   );
 }

@@ -9,7 +9,6 @@ const GET_POSTS = gql`
       content
       category
       author {
-        id
         username
       }
     }
@@ -20,111 +19,96 @@ const GET_HELP_REQUESTS = gql`
   query {
     getAllHelpRequests {
       id
-      author {
-        id
-        username
-      }
       description
       location
       isResolved
-      volunteers {
-        id
+      author {
         username
       }
-      createdAt
-      updatedAt
     }
   }
 `;
 
-function formatDateTime(dateString) {
-  if (!dateString) return 'N/A';
-  const parsed = Date.parse(dateString);
-  if (isNaN(parsed)) return 'Invalid Date';
-  return new Date(parsed).toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+const GET_BUSINESSES = gql`
+  query {
+    getBusinesses {
+      id
+      name
+      description
+    }
+  }
+`;
 
-function News() {
-  const { loading: loadingPost, error: errorPost, data: dataPost } = useQuery(GET_POSTS);
-  const { loading: loadingRequest, error: errorRequest, data: dataRequest } = useQuery(GET_HELP_REQUESTS);
+export default function News() {
+  const { data: postData } = useQuery(GET_POSTS);
+  const { data: helpData } = useQuery(GET_HELP_REQUESTS);
+  const { data: bizData } = useQuery(GET_BUSINESSES);
+
+  const posts = postData?.getAllPosts || [];
+  const helps = helpData?.getAllHelpRequests || [];
+  const businesses = bizData?.getBusinesses || [];
 
   return (
-<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 text-white">
-  <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-zinc-950 to-black p-8 text-white">
+      <h1 className="text-4xl font-extrabold mb-10 text-center drop-shadow text-white">
+        Community Dashboard
+      </h1>
 
-    {/* News & Dashboard Summary */}
-    <div className="w-full bg-zinc-900 p-6 rounded-xl shadow-xl border border-zinc-800">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-extrabold text-white">Community Dashboard</h1>
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-6 max-w-7xl mx-auto">
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Community Posts */}
-        <div className="bg-zinc-800 p-4 rounded-lg shadow-md border border-zinc-700">
-          <h3 className="text-xl font-bold text-cyan-400 mb-4">Community Posts</h3>
-          {loadingPost ? (
-            <p className="text-zinc-400">Loading posts...</p>
-          ) : errorPost ? (
-            <p className="text-red-400">Failed to load posts</p>
-          ) : (
-            <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
-              {dataPost?.getAllPosts.map(({ id, title, content, category, author }) => (
-                <div key={id} className="p-4 bg-zinc-900 rounded-lg border border-zinc-700 shadow-md">
-                  <h4 className="text-lg text-blue-400 font-semibold">{title}</h4>
-                  <p className="text-sm text-zinc-400 mt-1"><strong>Category:</strong> {category}</p>
-                  <p className="text-sm text-zinc-400"><strong>Author:</strong> {author?.username || 'Unknown'}</p>
-                  <p className="text-zinc-300 mt-2 text-sm">{content}</p>
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Community Posts Section */}
+        <div className="md:col-span-4 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-bold text-cyan-300 mb-4">Community Posts</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto scrollbar-none">
+            {posts.map(post => (
+              <div
+                key={post.id}
+                className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
+              >
+                <h3 className="text-lg font-semibold text-blue-400">{post.title}</h3>
+                <p className="text-sm text-zinc-300"><strong>Category:</strong> {post.category}</p>
+                <p className="text-sm text-zinc-300"><strong>Author:</strong> {post.author?.username || 'Unknown'}</p>
+                <p className="text-sm text-zinc-200 mt-2">{post.content}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Help Requests */}
-        <div className="bg-zinc-800 p-4 rounded-lg shadow-md border border-zinc-700">
-          <h3 className="text-xl font-bold text-fuchsia-400 mb-4">Help Requests</h3>
-          {loadingRequest ? (
-            <p className="text-zinc-400">Loading requests...</p>
-          ) : errorRequest ? (
-            <p className="text-red-400">Failed to load help requests</p>
-          ) : (
-            <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
-              {dataRequest?.getAllHelpRequests.map((req) => (
-                <div key={req.id} className="p-4 bg-zinc-900 rounded-lg border border-zinc-700 shadow-md">
-                  <h4 className="text-lg text-emerald-400 font-semibold">{req.description}</h4>
-                  <p className="text-sm text-zinc-400 mt-1"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
-                  <p className="text-sm text-zinc-400"><strong>Location:</strong> {req.location || 'N/A'}</p>
-                  <p className="text-sm text-zinc-400"><strong>Status:</strong> {req.isResolved ? 'Resolved' : 'Pending'}</p>
-                  <p className="text-sm text-zinc-400">
-                    <strong>Volunteers:</strong> {req.volunteers?.length > 0 ? req.volunteers.map((v) => v.username).join(', ') : 'None'}
-                  </p>
-                  <p className="text-xs text-zinc-600 mt-1">
-                    <strong>Created:</strong> {req.createdAt ? new Date(req.createdAt).toLocaleString() : 'N/A'}
-                  </p>
-                  {req.updatedAt && (
-                    <p className="text-xs text-zinc-600">
-                      <strong>Updated:</strong> {new Date(req.updatedAt).toLocaleString()}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+        {/* Help Requests Section */}
+        <div className="md:col-span-2 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-bold text-fuchsia-400 mb-4">Help Requests</h2>
+          <div className="space-y-4 max-h-[300px] overflow-y-auto scrollbar-none">
+            {helps.map(req => (
+              <div
+                key={req.id}
+                className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
+              >
+                <h3 className="text-lg text-emerald-400 font-semibold">{req.description}</h3>
+                <p className="text-sm text-zinc-300"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
+                <p className="text-sm text-zinc-300"><strong>Location:</strong> {req.location || 'N/A'}</p>
+                <p className="text-sm text-zinc-300"><strong>Status:</strong> {req.isResolved ? 'Resolved' : 'Pending'}</p>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* Business Listings Section */}
+        <div className="md:col-span-6 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl mt-4">
+          <h2 className="text-2xl font-bold text-purple-400 mb-4">Explore new businesses near you</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {businesses.map(biz => (
+              <div
+                key={biz.id}
+                className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
+              >
+                <h3 className="text-lg font-semibold text-cyan-300">{biz.name}</h3>
+                <p className="text-sm text-zinc-200 mt-2">{biz.description?.slice(0, 80) || 'No description'}...</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
-
-  </div>
-</div>
-
-
   );
 }
-
-export default News;

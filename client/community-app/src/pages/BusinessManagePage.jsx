@@ -114,153 +114,174 @@ export default function BusinessManagePage() {
     };
 
     return (
-      <div className="min-h-screen p-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 text-white">
-      <div className="max-w-5xl mx-auto">
-        <button
-          onClick={() => navigate('/business-dashboard')}
-          className="mb-6 text-pink-400 hover:underline text-sm"
-        >
-          ← Back to Dashboard
-        </button>
-    
-        <h1 className="text-4xl font-bold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-purple-500 drop-shadow-md">
-          Manage: {business.name}
-        </h1>
-    
-        <h2 className="text-xl font-semibold mb-2 text-fuchsia-300">Business Description</h2>
-        <p className="mb-6 text-zinc-300 italic">{business.description}</p>
-    
-        <div className="flex gap-4 mb-6">
+      <div className="min-h-screen bg-zinc-950 text-white px-4 py-8">
+        <div className="max-w-4xl mx-auto">
           <button
-            onClick={() => setActiveTab('deals')}
-            className={`px-5 py-2 rounded-full font-medium transition ${
-              activeTab === 'deals' ? 'bg-pink-600 text-white' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-            }`}
+            onClick={() => navigate('/business-dashboard')}
+            className="text-sm text-purple-300 hover:underline mb-6 block"
           >
-            Deals
+            ← Back to Dashboard
           </button>
-          <button
-            onClick={() => setActiveTab('reviews')}
-            className={`px-5 py-2 rounded-full font-medium transition ${
-              activeTab === 'reviews' ? 'bg-pink-600 text-white' : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
-            }`}
-          >
-            Reviews
-          </button>
-        </div>
     
-        {activeTab === 'deals' && (
-          <div className="bg-zinc-900/60 rounded-2xl shadow-lg border border-zinc-800 p-6">
-            <h2 className="text-xl font-semibold text-purple-300 mb-4">Deals</h2>
-            <div className="mb-4 grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4">
-              <input
-                className="p-3 rounded-md bg-zinc-800 border border-zinc-700 text-white placeholder-zinc-500 w-full"
-                value={deal}
-                onChange={(e) => setDeal(e.target.value)}
-                placeholder="Add new deal..."
-              />
-              <button
-                className="bg-emerald-500 hover:bg-emerald-600 px-4 py-2 rounded-md text-white w-full"
-                onClick={handleAddDeal}
-              >
-                Add Deal
-              </button>
-            </div>
-            <ul className="space-y-2">
-              {business.deals.map((d, idx) => (
-                <li key={idx} className="flex justify-between items-center p-3 bg-zinc-800 rounded-md shadow border border-zinc-700">
-                  <span>🎁 {d}</span>
-                  <button
-                    onClick={() => removeDeal({ variables: { businessId: id, deal: d } })}
-                    className="text-red-400 hover:underline"
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
+          <h1 className="text-3xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 drop-shadow-md text-center">
+            Manage: {business.name}
+          </h1>
+    
+          <h2 className="text-center text-fuchsia-300 font-semibold text-lg mb-1">
+            Business Description
+          </h2>
+          <p className="text-center text-zinc-400 italic mb-6">{business.description}</p>
+    
+          <div className="flex justify-center gap-4 mb-6">
+            <button
+              onClick={() => setActiveTab('deals')}
+              className={`px-5 py-2 rounded-full font-medium text-sm transition ${
+                activeTab === 'deals'
+                  ? 'bg-purple-500/20 text-purple-300'
+                  : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              Deals
+            </button>
+            <button
+              onClick={() => setActiveTab('reviews')}
+              className={`px-5 py-2 rounded-full font-medium text-sm transition ${
+                activeTab === 'reviews'
+                  ? 'bg-purple-500/20 text-purple-300'
+                  : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              Reviews
+            </button>
           </div>
-        )}
     
-        {activeTab === 'reviews' && (
-          <div className="bg-zinc-900/60 rounded-2xl shadow-lg border border-zinc-800 p-6 mt-4">
-            <h2 className="text-xl font-semibold text-purple-300 mb-4">Customer Reviews</h2>
-            {reviewData?.getReviews.length === 0 ? (
-              <p className="text-zinc-400 italic">No reviews yet.</p>
-            ) : (
-              <ul className="space-y-4">
-                {reviewData.getReviews.map((review) => (
-                  <li key={review.id} className="p-4 rounded-xl bg-zinc-800 border border-zinc-700 shadow-md">
-                    <p className="text-lg font-semibold text-yellow-400">⭐ {review.rating}</p>
-                    <p className="text-zinc-300 mb-2">{review.comment}</p>
-                    {review.sentiment && (
-                      <span
-                        className={`inline-block text-xs font-semibold mb-2 px-3 py-1 rounded-full ${
-                          review.sentiment.toUpperCase() === 'NEGATIVE'
-                            ? 'bg-red-700/30 text-red-300'
-                            : 'bg-green-700/30 text-green-300'
-                        }`}
-                      >
-                        Sentiment: {review.sentiment}
-                      </span>
-                    )}
-                    {editingResponseId === review.id ? (
-                      <div className="space-y-2">
-                        <input
-                          className="w-full p-2 rounded bg-zinc-700 text-white border border-zinc-600"
-                          placeholder="Edit your response..."
-                          value={responseInputs[review.id] || ''}
-                          onChange={(e) => setResponseInputs((prev) => ({ ...prev, [review.id]: e.target.value }))}
-                        />
-                        <button
-                          onClick={() => handleRespond(review.id)}
-                          className="bg-pink-600 px-4 py-2 rounded text-white hover:bg-pink-700"
-                        >
-                          Save Response
-                        </button>
-                      </div>
-                    ) : review.businessResponse?.text ? (
-                      <div className="text-sm text-zinc-300 space-y-1">
-                        <p><strong>Response:</strong> {review.businessResponse.text}</p>
-                        <div className="space-x-4">
-                          <button
-                            onClick={() => handleEditClick(review.id, review.businessResponse.text)}
-                            className="text-yellow-400 hover:underline"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteResponse(review.id)}
-                            className="text-red-400 hover:underline"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="space-y-2">
-                        <input
-                          className="w-full p-2 rounded bg-zinc-700 text-white border border-zinc-600"
-                          placeholder="Write your response..."
-                          value={responseInputs[review.id] || ''}
-                          onChange={(e) => setResponseInputs((prev) => ({ ...prev, [review.id]: e.target.value }))}
-                        />
-                        <button
-                          onClick={() => handleRespond(review.id)}
-                          className="bg-blue-600 px-4 py-2 rounded text-white hover:bg-blue-700"
-                        >
-                          Respond
-                        </button>
-                      </div>
-                    )}
+          {/* DEALS SECTION */}
+          {activeTab === 'deals' && (
+            <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl space-y-6">
+              <h2 className="text-xl font-semibold text-purple-300">Deals</h2>
+    
+              <div className="flex flex-col md:flex-row gap-4">
+                <input
+                  className="flex-1 p-3 rounded-xl bg-zinc-800 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  value={deal}
+                  onChange={(e) => setDeal(e.target.value)}
+                  placeholder="Add new deal..."
+                />
+                <button
+                  onClick={handleAddDeal}
+                  className="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:brightness-110 shadow-md transition"
+                >
+                  Add Deal
+                </button>
+              </div>
+    
+              <ul className="space-y-3">
+                {business.deals.map((d, idx) => (
+                  <li
+                    key={idx}
+                    className="flex justify-between items-center p-3 bg-zinc-800 rounded-xl shadow"
+                  >
+                    <span className="text-sm">🎁 {d}</span>
+                    <button
+                      onClick={() => removeDeal({ variables: { businessId: id, deal: d } })}
+                      className="text-rose-400 hover:text-rose-300 text-sm"
+                    >
+                      Remove
+                    </button>
                   </li>
                 ))}
               </ul>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+            </div>
+          )}
     
+          {/* REVIEWS SECTION */}
+          {activeTab === 'reviews' && (
+            <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl space-y-6 mt-6">
+              <h2 className="text-xl font-semibold text-purple-300">Customer Reviews</h2>
+    
+              {reviewData?.getReviews.length === 0 ? (
+                <p className="text-zinc-400 italic">No reviews yet.</p>
+              ) : (
+                <ul className="space-y-6">
+                  {reviewData.getReviews.map((review) => (
+                    <li key={review.id} className="p-4 rounded-2xl bg-zinc-800 shadow-md space-y-3">
+                      <p className="text-lg font-semibold text-yellow-400">⭐ {review.rating}</p>
+                      <p className="text-zinc-300">{review.comment}</p>
+                      {review.sentiment && (
+                        <span
+                          className={`inline-block text-xs font-semibold px-3 py-1 rounded-full ${
+                            review.sentiment.toUpperCase() === 'NEGATIVE'
+                              ? 'bg-red-700/30 text-red-300'
+                              : 'bg-green-700/30 text-green-300'
+                          }`}
+                        >
+                          Sentiment: {review.sentiment}
+                        </span>
+                      )}
+    
+                      {editingResponseId === review.id ? (
+                        <div className="space-y-2">
+                          <input
+                            className="w-full p-2 rounded bg-zinc-700 text-white"
+                            placeholder="Edit your response..."
+                            value={responseInputs[review.id] || ''}
+                            onChange={(e) =>
+                              setResponseInputs((prev) => ({ ...prev, [review.id]: e.target.value }))
+                            }
+                          />
+                          <button
+                            onClick={() => handleRespond(review.id)}
+                            className="w-full md:w-auto bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 text-white px-4 py-2 rounded-lg shadow-sm"
+                          >
+                            Save Response
+                          </button>
+                        </div>
+                      ) : review.businessResponse?.text ? (
+                        <div className="text-sm text-zinc-300 space-y-1">
+                          <p>
+                            <strong>Response:</strong> {review.businessResponse.text}
+                          </p>
+                          <div className="flex gap-4 mt-1">
+                            <button
+                              onClick={() => handleEditClick(review.id, review.businessResponse.text)}
+                              className="text-yellow-300 hover:text-yellow-200 px-3 py-1 text-sm rounded-full transition"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDeleteResponse(review.id)}
+                              className="text-rose-400 hover:text-rose-300 px-3 py-1 text-sm rounded-full transition"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2 mt-3">
+                          <input
+                            className="bg-zinc-700/70 text-white placeholder-zinc-400 p-2 rounded-lg flex-1 transition focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder="Write your response..."
+                            value={responseInputs[review.id] || ''}
+                            onChange={(e) =>
+                              setResponseInputs((prev) => ({ ...prev, [review.id]: e.target.value }))
+                            }
+                          />
+                          <button
+                            onClick={() => handleRespond(review.id)}
+                            className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 transition text-white px-4 py-2 rounded-lg shadow-sm"
+                          >
+                            Respond
+                          </button>
+                        </div>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     );
+    
 }

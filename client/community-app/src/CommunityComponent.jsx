@@ -36,34 +36,51 @@ function App() {
     }
 
     return (
-        <ApolloProvider client={client}>
-            <Router>
-                <Navbar bg="light" expand="lg">
-                    <Container>
-                        <Navbar.Brand as={Link} to="/">Community</Navbar.Brand>
-                        <Nav className="me-auto">
-                            <Nav.Link as={Link} to="/community-post">Community Post</Nav.Link>
-                            <Nav.Link as={Link} to="/help-requests">Help Requests</Nav.Link>
-                            <Nav.Link as={Link} to="/businesses">Business Listings</Nav.Link>
-                            <Nav.Link as={Link} to="/business-dashboard">Business Dashboard</Nav.Link>
-                        </Nav>
-                        <Nav>
-                            <button onClick={handleSignOut} className="btn btn-outline-danger">Sign Out</button>
-                        </Nav>
-                    </Container>
-                </Navbar>
-                <Container className="mt-4">
-                    <Routes>
-                        <Route path="/community-post" element={<CommunityPost />} />
-                        <Route path="/help-requests" element={<HelpRequests />} />
-                        <Route path="/businesses" element={<BusinessPage />} />
-                        <Route path="/business-dashboard" element={<BusinessDashboardPage />} />
-                        <Route path="/businesses/:id" element={<BusinessManagePage />} />
-                        <Route path="/" element={<News />} />
-                    </Routes>
-                </Container>
-            </Router>
-        </ApolloProvider>
+<ApolloProvider client={client}>
+  <Router>
+    {/* 🌑 Dark Navbar */}
+    <nav className="bg-zinc-900 border-b border-zinc-800 shadow-md">
+      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        <Link to="/" className="text-fuchsia-400 text-xl font-bold tracking-wide hover:text-fuchsia-300">
+          Community
+        </Link>
+        <div className="flex space-x-6 items-center">
+          <Link to="/community-post" className="text-zinc-300 hover:text-white transition">
+            Community Post
+          </Link>
+          <Link to="/help-requests" className="text-zinc-300 hover:text-white transition">
+            Help Requests
+          </Link>
+          <Link to="/businesses" className="text-zinc-300 hover:text-white transition">
+            Business Listings
+          </Link>
+          <Link to="/business-dashboard" className="text-zinc-300 hover:text-white transition">
+            Business Dashboard
+          </Link>
+          <button
+            onClick={handleSignOut}
+            className="ml-4 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition"
+          >
+            Sign Out
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    {/* 💻 Page Routes */}
+    <div className="p-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 min-h-screen text-white">
+      <Routes>
+        <Route path="/community-post" element={<CommunityPost />} />
+        <Route path="/help-requests" element={<HelpRequests />} />
+        <Route path="/businesses" element={<BusinessPage />} />
+        <Route path="/business-dashboard" element={<BusinessDashboardPage />} />
+        <Route path="/businesses/:id" element={<BusinessManagePage />} />
+        <Route path="/" element={<News />} />
+      </Routes>
+    </div>
+  </Router>
+</ApolloProvider>
+
     );
 }
 

@@ -136,13 +136,18 @@ function BusinessCardList() {
 export default function BusinessDashboardPage() {
 
     return (
-        <div className="min-h-screen p-6 bg-gray-50">
-            <h1 className="text-3xl font-bold mb-6">My Business Dashboard</h1>
-            
-            <div className="flex gap-6">
-                <ManageBusinessInfo />
-                <BusinessCardList />
-            </div>
-        </div>
+<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 text-white">
+  <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-cyan-500 drop-shadow">
+    My Business Dashboard
+  </h1>
+  <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-8">
+    <div className="lg:w-1/2 bg-zinc-900 p-6 rounded-xl shadow-xl border border-zinc-800">
+      <ManageBusinessInfo />
+    </div>
+    <div className="lg:w-1/2 bg-zinc-900 p-6 rounded-xl shadow-xl border border-zinc-800">
+      <BusinessCardList />
+    </div>
+  </div>
+</div>
     );
 }

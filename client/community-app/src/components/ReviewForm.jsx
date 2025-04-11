@@ -33,24 +33,32 @@ export default function ReviewForm({ businessId }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-2">
-            <textarea
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                className="w-full p-2 border"
-                placeholder="Your review..."
-            />
-            <input
-                type="number"
-                value={rating}
-                min={1}
-                max={5}
-                onChange={(e) => setRating(+e.target.value)}
-                className="p-1 border w-20"
-            />
-            <button type="submit" className="px-3 py-1 bg-blue-500 text-white rounded">
-                Submit
-            </button>
-        </form>
+<form onSubmit={handleSubmit} className="space-y-4 bg-zinc-900 border border-zinc-800 p-6 rounded-xl shadow-md mt-6">
+  <textarea
+    value={comment}
+    onChange={(e) => setComment(e.target.value)}
+    className="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 placeholder-zinc-500 resize-none"
+    placeholder="Your review..."
+    rows={4}
+  />
+  <div className="flex items-center gap-4">
+    <label className="text-zinc-300 font-medium">Rating:</label>
+    <input
+      type="number"
+      value={rating}
+      min={1}
+      max={5}
+      onChange={(e) => setRating(+e.target.value)}
+      className="p-2 w-24 rounded bg-zinc-800 text-white border border-zinc-700"
+    />
+  </div>
+  <button
+    type="submit"
+    className="w-full py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold transition"
+  >
+    Submit Review
+  </button>
+</form>
+
     );
 }

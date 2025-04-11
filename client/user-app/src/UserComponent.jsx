@@ -89,51 +89,88 @@ function UserComponent() {
     };
 
     return (
-        <div className="h-screen flex flex-col justify-center items-center">
-            <h1 className="text-3xl font-bold mb-6">Community Engagement App</h1>
-            <div className="p-6 max-w-md mx-auto bg-white text-gray-900 rounded-xl shadow-md">
-                <div className="flex mb-4">
-                    <button className={`flex-1 p-3 rounded-lg text-lg font-semibold ${activeTab === 'login' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setActiveTab('login')}>Login</button>
-                    <button className={`flex-1 p-3 rounded-lg text-lg font-semibold ${activeTab === 'signup' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`} onClick={() => setActiveTab('signup')}>Sign Up</button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {activeTab === 'signup' && (
-                        <input className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                            type="text" placeholder="Username" value={username}
-                            onChange={(e) => setUsername(e.target.value)} />
-                    )}
-
-                    <input className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                        type="email" placeholder="Email" value={email}
-                        onChange={(e) => setEmail(e.target.value)} />
-
-                    <input className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                        type="password" placeholder="Password" value={password}
-                        onChange={(e) => setPassword(e.target.value)} />
-
-                    {activeTab === 'signup' && (
-                        <select
-                            className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
-                            value={role}
-                            onChange={(e) => setRole(e.target.value)}
-                        >
-                            <option value="resident">Resident</option>
-                            <option value="business_owner">Business Owner</option>
-                            <option value="community_organizer">Community Organizer</option>
-                        </select>
-
-                    )}
-
-                    {authError && <p className="text-red-500 text-sm">{authError}</p>}
-
-                    <button className="w-full bg-blue-500 text-white p-3 rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
-                        type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? 'Loading...' : activeTab === 'login' ? 'Login' : 'Sign Up'}
-                    </button>
-                </form>
-            </div>
+        <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 flex flex-col justify-center items-center text-white px-4">
+        <h1 className="text-4xl font-bold mb-10 text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-blue-500 drop-shadow">
+          Community Engagement App
+        </h1>
+      
+        <div className="bg-zinc-900 w-full max-w-md p-8 rounded-xl border border-zinc-800 shadow-xl space-y-6">
+          {/* Tabs */}
+          <div className="flex mb-6">
+            <button
+              className={`flex-1 py-3 rounded-l-lg font-semibold text-lg transition ${
+                activeTab === 'login'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-zinc-800 text-zinc-400 hover:text-white'
+              }`}
+              onClick={() => setActiveTab('login')}
+            >
+              Login
+            </button>
+            <button
+              className={`flex-1 py-3 rounded-r-lg font-semibold text-lg transition ${
+                activeTab === 'signup'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-zinc-800 text-zinc-400 hover:text-white'
+              }`}
+              onClick={() => setActiveTab('signup')}
+            >
+              Sign Up
+            </button>
+          </div>
+      
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {activeTab === 'signup' && (
+              <input
+                className="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 placeholder-zinc-500"
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            )}
+      
+            <input
+              className="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 placeholder-zinc-500"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+      
+            <input
+              className="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700 placeholder-zinc-500"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+      
+            {activeTab === 'signup' && (
+              <select
+                className="w-full p-3 rounded-md bg-zinc-800 text-white border border-zinc-700"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="resident">Resident</option>
+                <option value="business_owner">Business Owner</option>
+                <option value="community_organizer">Community Organizer</option>
+              </select>
+            )}
+      
+            {authError && <p className="text-red-500 text-sm">{authError}</p>}
+      
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold transition"
+            >
+              {isSubmitting ? 'Loading...' : activeTab === 'login' ? 'Login' : 'Sign Up'}
+            </button>
+          </form>
         </div>
+      </div>
+      
     );
 }
 

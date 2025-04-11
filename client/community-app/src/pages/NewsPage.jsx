@@ -55,73 +55,75 @@ function News() {
   const { loading: loadingRequest, error: errorRequest, data: dataRequest } = useQuery(GET_HELP_REQUESTS);
 
   return (
-    <div className="min-h-screen flex flex-col items-start p-6 w-full max-w-7xl mx-auto bg-white text-gray-900">
-      <h2 className="text-3xl font-bold mb-6">Community Dashboard</h2>
+<div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 text-white">
+  <div className="flex flex-col lg:flex-row gap-8 max-w-7xl mx-auto">
 
-      <div className="grid grid-cols-2 gap-8 w-full">
+    {/* News & Dashboard Summary */}
+    <div className="w-full bg-zinc-900 p-6 rounded-xl shadow-xl border border-zinc-800">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-extrabold text-white">Community Dashboard</h1>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Community Posts */}
-        <div className="bg-gray-100 rounded-lg shadow-md w-full max-h-[80vh] overflow-y-auto">
-          <div className="sticky top-0 z-20 bg-gray-100 py-6 px-6 shadow-md border-b border-gray-300">
-            <h3 className="text-2xl font-bold">Community Posts</h3>
-          </div>
-          <div className="p-6">
-            {loadingPost ? (
-              <p>Loading...</p>
-            ) : errorPost ? (
-              <p className="text-red-500">Error fetching posts</p>
-            ) : (
-              <div className="space-y-4">
-                {dataPost?.getAllPosts.map(({ id, title, content, category, author }) => (
-                  <div key={id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
-                    <strong className="text-lg text-blue-600">{title}</strong>
-                    <p className="mt-4"><strong>Category:</strong> {category}</p>
-                    <p><strong>Author:</strong> {author?.username || 'Unknown'}</p>
-                    <p className="text-gray-700 mt-2"><strong>Content:</strong> {content}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div className="bg-zinc-800 p-4 rounded-lg shadow-md border border-zinc-700">
+          <h3 className="text-xl font-bold text-cyan-400 mb-4">Community Posts</h3>
+          {loadingPost ? (
+            <p className="text-zinc-400">Loading posts...</p>
+          ) : errorPost ? (
+            <p className="text-red-400">Failed to load posts</p>
+          ) : (
+            <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
+              {dataPost?.getAllPosts.map(({ id, title, content, category, author }) => (
+                <div key={id} className="p-4 bg-zinc-900 rounded-lg border border-zinc-700 shadow-md">
+                  <h4 className="text-lg text-blue-400 font-semibold">{title}</h4>
+                  <p className="text-sm text-zinc-400 mt-1"><strong>Category:</strong> {category}</p>
+                  <p className="text-sm text-zinc-400"><strong>Author:</strong> {author?.username || 'Unknown'}</p>
+                  <p className="text-zinc-300 mt-2 text-sm">{content}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Help Requests */}
-        <div className="bg-gray-100 rounded-lg shadow-md w-full max-h-[80vh] overflow-y-auto">
-          <div className="sticky top-0 z-20 bg-gray-100 py-6 px-6 shadow-md border-b border-gray-300">
-            <h3 className="text-2xl font-bold">Help Requests</h3>
-          </div>
-          <div className="p-6">
-            {loadingRequest ? (
-              <p>Loading...</p>
-            ) : errorRequest ? (
-              <p className="text-red-500">Error fetching help requests</p>
-            ) : (
-              <div className="space-y-4">
-                {dataRequest?.getAllHelpRequests.map((req) => (
-                  <div key={req.id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
-                    <strong className="text-lg text-blue-600">{req.description}</strong>
-                    <p className="mt-4"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
-                    <p><strong>Location:</strong> {req.location || 'N/A'}</p>
-                    <p><strong>Status:</strong> {req.isResolved ? 'Resolved' : 'Pending'}</p>
-                    <p>
-                      <strong>Volunteers:</strong>{" "}
-                      {req.volunteers?.length > 0
-                        ? req.volunteers.map((v) => v.username).join(', ')
-                        : 'None'}
+        <div className="bg-zinc-800 p-4 rounded-lg shadow-md border border-zinc-700">
+          <h3 className="text-xl font-bold text-fuchsia-400 mb-4">Help Requests</h3>
+          {loadingRequest ? (
+            <p className="text-zinc-400">Loading requests...</p>
+          ) : errorRequest ? (
+            <p className="text-red-400">Failed to load help requests</p>
+          ) : (
+            <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-2">
+              {dataRequest?.getAllHelpRequests.map((req) => (
+                <div key={req.id} className="p-4 bg-zinc-900 rounded-lg border border-zinc-700 shadow-md">
+                  <h4 className="text-lg text-emerald-400 font-semibold">{req.description}</h4>
+                  <p className="text-sm text-zinc-400 mt-1"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
+                  <p className="text-sm text-zinc-400"><strong>Location:</strong> {req.location || 'N/A'}</p>
+                  <p className="text-sm text-zinc-400"><strong>Status:</strong> {req.isResolved ? 'Resolved' : 'Pending'}</p>
+                  <p className="text-sm text-zinc-400">
+                    <strong>Volunteers:</strong> {req.volunteers?.length > 0 ? req.volunteers.map((v) => v.username).join(', ') : 'None'}
+                  </p>
+                  <p className="text-xs text-zinc-600 mt-1">
+                    <strong>Created:</strong> {req.createdAt ? new Date(req.createdAt).toLocaleString() : 'N/A'}
+                  </p>
+                  {req.updatedAt && (
+                    <p className="text-xs text-zinc-600">
+                      <strong>Updated:</strong> {new Date(req.updatedAt).toLocaleString()}
                     </p>
-                    <p><strong>Created At:</strong> {formatDateTime(req.createdAt)}</p>
-                    {req.updatedAt && (
-                      <p className="text-sm text-gray-500">
-                        <strong>Updated At:</strong> {formatDateTime(req.updatedAt)}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
+
+  </div>
+</div>
+
+
   );
 }
 

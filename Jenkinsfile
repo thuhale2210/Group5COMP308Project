@@ -38,12 +38,22 @@ pipeline {
                         'server',
                         'server/microservices/auth-service',
                         'server/microservices/business-event-service',
-                        'server/microservices/community-engagement-service'
+                        'server/microservices/community-engagement-service',
+                        'server/microservices/gemini-microservice'
                     ]
                     backendDirs.each { dirPath ->
                         dir(dirPath) {
-                            sh 'npm install'
+                            sh 'npm install || true'
                         }
+                    }
+
+                    // Install Python requirements for AI microservice
+                    dir('server/microservices/ai-microservice') {
+                        sh '''
+                            python3 -m venv venv
+                            source venv/bin/activate
+                            pip install -r requirements.txt
+                        '''
                     }
                 }
             }
@@ -112,6 +122,13 @@ pipeline {
                     }
                     dir('server/microservices/community-engagement-service') {
                         sh 'npm start &'
+                    }
+
+                    dir('server/microservices/ai-microservice') {
+                        sh 'source venv/bin/activate && python app.py &'
+                    }
+                    dir('server/microservices/gemini-microservice') {
+                        sh 'node index.js &'
                     }
 
                     dir('server') {

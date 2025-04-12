@@ -14,10 +14,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.3",
     "@apollo/subgraph": "^2.10.0",
-<<<<<<< HEAD
     "axios": "^1.8.4",
-=======
->>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cookie-parser": "^1.4.7",
@@ -32,8 +29,4 @@
   "devDependencies": {
     "nodemon": "^3.1.9"
   }
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a

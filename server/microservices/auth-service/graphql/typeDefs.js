@@ -1,4 +1,3 @@
-// ✅ auth-service/typeDefs.js
 import gql from "graphql-tag";
 
 export const typeDefs = gql`

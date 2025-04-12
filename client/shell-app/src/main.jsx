@@ -6,7 +6,7 @@ import './index.css';
 
 // Set up the Apollo Client for the API gateway
 const httpLink = createHttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: 'https://server-gateway-3ka9.onrender.com/graphql',
   credentials: 'include',
 });
 

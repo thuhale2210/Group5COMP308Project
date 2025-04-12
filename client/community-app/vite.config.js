@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import federation from '@originjs/vite-plugin-federation';
-//
+
 export default defineConfig({
   plugins: [
     react(),
@@ -16,7 +16,10 @@ export default defineConfig({
   ],
   server: {
     port: 3002,
-    cors: true,
+    cors: {
+      origin: ['http://localhost:3000', 'https://community-engagement-app.onrender.com'],
+      credentials: true,
+    },
     strictPort: true,
     historyApiFallback: true,
   },
@@ -25,6 +28,7 @@ export default defineConfig({
     target: 'esnext',
     minify: false,
     cssCodeSplit: false,
+    outDir: 'dist',
+    assetsDir: 'assets',
   },
-
 });

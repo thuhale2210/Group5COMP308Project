@@ -16,8 +16,10 @@ export default defineConfig({
   ],
   server: {
     port: 3001,
-    cors: true,
-    strictPort: true,
+    cors: {
+      origin: ['http://localhost:3000', 'https://community-engagement-app.onrender.com'],
+      credentials: true
+    }, strictPort: true,
   },
   build: {
     outDir: 'dist',

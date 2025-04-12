@@ -163,10 +163,10 @@ export default function BusinessDashboardPage() {
         My Business Dashboard
       </h1>
       <div className="w-full flex flex-col lg:flex-row gap-8">
-        <div className="lg:w-2/5 h-[372px] bg-white/5 p-6 rounded-2xl shadow-xl">
+        <div className="lg:w-1/3 h-[372px] bg-white/5 p-6 rounded-2xl shadow-xl">
           <ManageBusinessInfo />
         </div>
-        <div className="lg:w-3/5 bg-white/5 p-6 rounded-2xl shadow-xl">
+        <div className="lg:w-2/3 bg-white/5 p-6 rounded-2xl shadow-xl">
           <BusinessCardList />
         </div>
       </div>

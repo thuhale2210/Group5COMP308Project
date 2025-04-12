@@ -165,12 +165,6 @@ function HelpRequestPage() {
                   <div className="flex flex-col text-left">
                     <div className="flex items-center gap-2">
                       <p className="text-xl font-bold text-purple-400">{req.description}</p>
-                      <span className={`text-xs font-medium px-3 py-1 rounded-full
-        ${req.isResolved
-                          ? 'bg-green-500/20 text-green-300'
-                          : 'bg-yellow-500/20 text-yellow-300'}`}>
-                        {req.isResolved ? 'Resolved' : 'Pending'}
-                      </span>
                     </div>
                     <p className="text-sm text-zinc-400">{req.author?.username || 'Unknown'}</p>
                     <p className="text-sm text-zinc-500">
@@ -181,6 +175,12 @@ function HelpRequestPage() {
                         minute: '2-digit',
                       })}
                     </p>
+                    <span className={`text-xs w-24 text-center font-medium px-3 py-1 rounded-full
+        ${req.isResolved
+                        ? 'bg-green-500/20 text-green-300'
+                        : 'bg-yellow-500/20 text-yellow-300'}`}>
+                      {req.isResolved ? 'Resolved' : 'Pending'}
+                    </span>
                   </div>
 
                   <div className="flex gap-2 items-start">

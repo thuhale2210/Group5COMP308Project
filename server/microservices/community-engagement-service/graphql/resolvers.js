@@ -1,6 +1,17 @@
 import { GraphQLDateTime } from 'graphql-scalars';
 import CommunityPost from "../models/CommunityPost.js";
 import HelpRequest from "../models/HelpRequest.js";
+import axios from 'axios';
+
+const generateSummary = async (text) => {
+  try {
+    const response = await axios.post('http://localhost:5003/summarize', { text });
+    return response.data.summary;
+  } catch (err) {
+    console.error('❌ Summary generation failed:', err.message);
+    return null; // fallback
+  }
+};
 
 const resolvers = {
   // Register custom scalar
@@ -12,21 +23,56 @@ const resolvers = {
   },
 
   Mutation: {
+<<<<<<< HEAD
+    // createPost: async (_, { title, content, category }, { user }) => {
+    //   if (!user?.id) throw new Error('Unauthorized');
+    //   return await new CommunityPost({ author: user.id, title, content, category }).save();
+    // },
+=======
     createPost: async (_, { title, content, category }, { user }) => {
       if (!user?.id) throw new Error('Unauthorized');
       return await new CommunityPost({ author: user.id, title, content, category }).save();
     },
+>>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a
 
+    createPost: async (_, { title, content, category }, { user }) => {
+      if (!user?.id) throw new Error('Unauthorized');
+      const summary = await generateSummary(content);
+      return await new CommunityPost({
+        author: user.id,
+        title,
+        content,
+        category,
+        aiSummary: summary,
+      }).save();
+    },
+    
+    // updatePost: async (_, { id, title, content, category }, { user }) => {
+    //   const post = await CommunityPost.findById(id);
+    //   if (!post || post.author.toString() !== user.id) throw new Error("Permission Denied");
+    //   return await CommunityPost.findByIdAndUpdate(
+    //     id,
+    //     { title, content, category, updatedAt: new Date() },
+    //     { new: true }
+    //   );
+    // },
     updatePost: async (_, { id, title, content, category }, { user }) => {
       const post = await CommunityPost.findById(id);
       if (!post || post.author.toString() !== user.id) throw new Error("Permission Denied");
+    
+      const summary = content ? await generateSummary(content) : post.aiSummary;
+    
       return await CommunityPost.findByIdAndUpdate(
         id,
+<<<<<<< HEAD
+        { title, content, category, aiSummary: summary, updatedAt: new Date() },
+=======
         { title, content, category, updatedAt: new Date() },
+>>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a
         { new: true }
       );
     },
-
+    
     deletePost: async (_, { id }, { user }) => {
       const post = await CommunityPost.findById(id);
       if (!post || post.author.toString() !== user.id) throw new Error("Permission Denied");

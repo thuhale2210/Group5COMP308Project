@@ -42,3 +42,9 @@ coverage/
 
 # --- Docker (if applicable) ---
 *.pid
+
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd

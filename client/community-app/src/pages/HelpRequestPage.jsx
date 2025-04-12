@@ -116,28 +116,28 @@ function HelpRequestPage() {
   };
 
   return (
-    <div className="min-h-screen flex p-6 bg-gray-50 gap-6">
-      {/* Left Column: Form */}
-      <div className="w-2/5 max-w-md bg-gray-100 p-6 rounded-lg shadow-md sticky top-24 self-start h-fit">
-        <h2 className="text-2xl font-bold mb-4">
+    <div className="min-h-screen flex p-6 bg-zinc-950 text-white gap-8 font-sans">
+      {/* Form */}
+      <div className="w-2/5 max-w-md bg-white/5 backdrop-blur-lg p-6 rounded-2xl shadow-xl sticky top-24 self-start">
+        <h2 className="text-2xl font-semibold text-white mt-2 mb-4">
           {editingId ? 'Edit Help Request' : 'Request Help'}
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4 flex flex-col">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <textarea
-            className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 h-40 bg-zinc-800/70 text-white placeholder-zinc-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
             placeholder="Describe your help request"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
           <input
-            className="w-full p-3 rounded-md bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 bg-zinc-800/70 text-white placeholder-zinc-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             type="text"
             placeholder="Enter location (optional)"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
           <button
-            className="w-full bg-blue-500 text-white p-3 rounded-lg shadow-md hover:bg-blue-600 transition duration-300"
+            className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 text-white py-2 rounded-xl transition-all shadow-lg"
             type="submit"
             disabled={creating}
           >
@@ -146,62 +146,78 @@ function HelpRequestPage() {
         </form>
       </div>
 
-      {/* Right Column: Scrollable Requests */}
-      <div className="flex-1 bg-gray-100 rounded-lg shadow-md max-h-[80vh] overflow-y-auto">
-        {/* ✅ Sticky Header with extra height and opaque background */}
-        <div className="sticky top-0 z-30 bg-gray-100 px-6 py-6 shadow-md border-b min-h-[4.5rem]">
-          <h3 className="text-2xl font-bold">Help Requests</h3>
+      {/* Help Requests List */}
+      <div className="flex-1 bg-white/5 rounded-2xl shadow-xl overflow-y-auto">
+        <div className="sticky top-0 z-10 px-6 mt-10">
+          <h3 className="text-2xl font-semibold text-white">Help Requests</h3>
         </div>
 
         <div className="p-6 space-y-4">
           {loading ? (
-            <p>Loading...</p>
+            <p className="text-zinc-400">Loading...</p>
           ) : error ? (
-            <p className="text-red-500">Error fetching help requests</p>
+            <p className="text-red-400">Error fetching help requests</p>
           ) : (
             data.getAllHelpRequests.map((req) => (
-              <div key={req.id} className="p-4 bg-white border rounded shadow">
-                <strong className="text-blue-600 text-lg">{req.description}</strong>
-                <p className="mt-2"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
-                <p><strong>Location:</strong> {req.location || 'N/A'}</p>
-                <p><strong>Status:</strong> {req.isResolved ? 'Resolved' : 'Pending'}</p>
-                <p>
-                  <strong>Volunteers:</strong>{' '}
-                  {req.volunteers?.length > 0
-                    ? req.volunteers.map((v) => v.username).join(', ')
-                    : 'None'}
-                </p>
-                <p>
-                  <strong>Created At:</strong>{' '}
-                  {req.createdAt ? new Date(req.createdAt).toLocaleString() : 'N/A'}
-                </p>
-                {req.updatedAt && (
-                  <p className="text-sm text-gray-500">
-                    <strong>Updated At:</strong> {new Date(req.updatedAt).toLocaleString()}
+              <div key={req.id} className="bg-white/5 backdrop-blur-md p-4 rounded-2xl shadow-md space-y-4">
+                {/* Title + Badge + Action Buttons */}
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-col text-left">
+                    <div className="flex items-center gap-2">
+                      <p className="text-xl font-bold text-purple-400">{req.description}</p>
+                      <span className={`text-xs font-medium px-3 py-1 rounded-full
+        ${req.isResolved
+                          ? 'bg-green-500/20 text-green-300'
+                          : 'bg-yellow-500/20 text-yellow-300'}`}>
+                        {req.isResolved ? 'Resolved' : 'Pending'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-zinc-400">{req.author?.username || 'Unknown'}</p>
+                    <p className="text-sm text-zinc-500">
+                      {req.createdAt && new Date(req.createdAt).toLocaleString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2 items-start">
+                    <button
+                      onClick={() => handleEdit(req)}
+                      className="bg-yellow-300/20 text-yellow-300 hover:bg-yellow-300/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(req.id)}
+                      className="bg-rose-400/20 text-rose-400 hover:bg-rose-400/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+
+                {/* Meta Info */}
+                <div className="text-zinc-300 space-y-1 text-left">
+                  <p><strong>Location:</strong> {req.location || 'N/A'}</p>
+                  <p>
+                    <strong>Volunteers:</strong>{' '}
+                    {req.volunteers?.length > 0
+                      ? req.volunteers.map((v) => v.username).join(', ')
+                      : 'None'}
                   </p>
-                )}
+                </div>
+
                 {!req.isResolved && (
                   <button
-                    className="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
                     onClick={() => handleResolve(req.id)}
+                    className="w-full bg-green-300/20 text-green-300 hover:bg-green-300/30 px-4 py-2 text-sm font-medium rounded-full transition shadow-sm"
                   >
                     Mark as Resolved
                   </button>
                 )}
-                <div className="mt-4 flex gap-2">
-                  <button
-                    className="px-4 py-2 bg-yellow-400 text-white rounded hover:bg-yellow-500"
-                    onClick={() => handleEdit(req)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                    onClick={() => handleDelete(req.id)}
-                  >
-                    Delete
-                  </button>
-                </div>
               </div>
             ))
           )}

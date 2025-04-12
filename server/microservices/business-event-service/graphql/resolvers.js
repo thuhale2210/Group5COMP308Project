@@ -1,6 +1,10 @@
 import Business from '../models/Business.js';
 import Review from '../models/Review.js';
 import Event from '../models/Event.js';
+<<<<<<< HEAD
+import { analyzeSentiment } from '../utils/sentiment.js';
+=======
+>>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a
 
 const resolvers = {
     Query: {
@@ -36,11 +40,29 @@ const resolvers = {
                 { new: true }
             ),
 
+<<<<<<< HEAD
+        // createReview: async (_, args, context) => {
+        //     if (!context.user) throw new Error('Unauthorized');
+        //     return await Review.create({ ...args, author: context.user.id });
+        // },
+        createReview: async (_, args, context) => {
+            if (!context.user) throw new Error('Unauthorized');
+        
+            const sentiment = await analyzeSentiment(args.comment || '');
+            return await Review.create({
+                ...args,
+                author: context.user.id,
+                sentiment,
+            });
+        },
+     
+=======
         createReview: async (_, args, context) => {
             if (!context.user) throw new Error('Unauthorized');
             return await Review.create({ ...args, author: context.user.id });
         },
 
+>>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a
         updateReview: async (_, { id, ...update }) =>
             await Review.findByIdAndUpdate(id, update, { new: true }),
 

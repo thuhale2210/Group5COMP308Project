@@ -1,4 +1,3 @@
-// 📁 pages/BusinessDashboardPage.jsx
 import { useState, useEffect } from 'react';
 import { gql, useQuery, useMutation } from '@apollo/client';
 import { useNavigate } from 'react-router-dom';
@@ -37,112 +36,140 @@ const DELETE_BUSINESS = gql`
 `;
 
 function ManageBusinessInfo() {
-    const userId = localStorage.getItem('userId');
-    const { data, refetch } = useQuery(GET_BUSINESS_BY_OWNER, {
-        variables: { ownerId: userId },
-        skip: !userId,
-    });
+  const userId = localStorage.getItem('userId');
+  const { data, refetch } = useQuery(GET_BUSINESS_BY_OWNER, {
+    variables: { ownerId: userId },
+    skip: !userId,
+  });
 
-    const [createBusiness] = useMutation(CREATE_BUSINESS, { onCompleted: () => refetch() });
-    const [updateBusiness] = useMutation(UPDATE_BUSINESS, { onCompleted: () => refetch() });
+  const [createBusiness] = useMutation(CREATE_BUSINESS, { onCompleted: () => refetch() });
+  const [updateBusiness] = useMutation(UPDATE_BUSINESS, { onCompleted: () => refetch() });
 
-    const [form, setForm] = useState({ name: '', description: '' });
-    const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState({ name: '', description: '' });
+  const [editingId, setEditingId] = useState(null);
 
-    useEffect(() => {
-        if (editingId && data) {
-            const biz = data.getBusinessesByOwner.find(b => b.id === editingId);
-            if (biz) setForm({ name: biz.name, description: biz.description });
-        }
-    }, [editingId, data]);
+  useEffect(() => {
+    if (editingId && data) {
+      const biz = data.getBusinessesByOwner.find(b => b.id === editingId);
+      if (biz) setForm({ name: biz.name, description: biz.description });
+    }
+  }, [editingId, data]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!form.name.trim()) {
-            alert("Business name is required");
-            return;
-        }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!form.name.trim()) {
+      alert("Business name is required");
+      return;
+    }
 
-        if (editingId) {
-            await updateBusiness({ variables: { id: editingId, ...form } });
-        } else {
-            await createBusiness({ variables: { ...form, owner: userId } });
-        }
-        setForm({ name: '', description: '' });
-        setEditingId(null);
-    };
+    if (editingId) {
+      await updateBusiness({ variables: { id: editingId, ...form } });
+    } else {
+      await createBusiness({ variables: { ...form, owner: userId } });
+    }
+    setForm({ name: '', description: '' });
+    setEditingId(null);
+  };
 
-    return (
-        <div className="w-1/3 space-y-4">
-            <h2 className="text-xl font-semibold mb-4">Manage Business Info</h2>
-            <form onSubmit={handleSubmit} className="space-y-3 mb-6">
-                <input
-                    className="w-full p-2 border rounded"
-                    placeholder="Business Name"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                />
-                <textarea
-                    className="w-full p-2 border rounded"
-                    placeholder="Description"
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                />
-                <button className="bg-blue-500 text-white px-4 py-1 rounded" type="submit">
-                    {editingId ? 'Update' : 'Create'} Business
-                </button>
-            </form>
-        </div>
-    );
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-semibold text-white">Start a Business!</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          className="w-full p-3 rounded-xl bg-zinc-800/80 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+          placeholder="Business Name"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
+        />
+        <textarea
+          className="w-full p-3 h-32 rounded-xl bg-zinc-800/80 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 resize-none"
+          placeholder="Description"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+        />
+        <button
+          type="submit"
+          className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 text-white py-2 rounded-xl transition-all shadow-lg"
+        >
+          {editingId ? 'Update' : 'Create'} Business
+        </button>
+      </form>
+    </div>
+  );
 }
 
 function BusinessCardList() {
-    const userId = localStorage.getItem('userId');
-    const { data, refetch } = useQuery(GET_BUSINESS_BY_OWNER, {
-        variables: { ownerId: userId },
-        skip: !userId,
-    });
+  const userId = localStorage.getItem('userId');
+  const { data, refetch } = useQuery(GET_BUSINESS_BY_OWNER, {
+    variables: { ownerId: userId },
+    skip: !userId,
+  });
 
-    const [deleteBusiness] = useMutation(DELETE_BUSINESS, { onCompleted: () => refetch() });
-    const navigate = useNavigate();
+  const [deleteBusiness] = useMutation(DELETE_BUSINESS, { onCompleted: () => refetch() });
+  const navigate = useNavigate();
 
-    return (
-        <div className="w-2/3 space-y-4">
-            {data?.getBusinessesByOwner?.map((b) => (
-                <div key={b.id} className="border p-4 rounded shadow bg-white">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <strong className="block text-lg">{b.name}</strong>
-                            <p className="text-gray-700">{b.description}</p>
-                            {b.deals.length > 0 && (
-                                <ul className="mt-2 text-sm">
-                                    {b.deals.map((deal, idx) => (
-                                        <li key={idx}>🎁 {deal}</li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
-                        <div className="space-x-2">
-                            <button onClick={() => navigate(`/businesses/${b.id}`)} className="bg-blue-600 px-3 py-1 text-white rounded">Manage</button>
-                            <button onClick={() => deleteBusiness({ variables: { id: b.id } })} className="bg-red-500 px-3 py-1 rounded text-white">Delete</button>
-                        </div>
-                    </div>
-                </div>
-            ))}
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-semibold text-white">Your Businesses</h2>
+      {data?.getBusinessesByOwner?.map((b) => (
+        <div key={b.id} className="bg-white/5 backdrop-blur-md p-4 rounded-2xl shadow-lg transition">
+          <div className="flex justify-between items-start gap-4">
+            <div>
+              <h3 className="text-xl font-bold text-purple-400 text-left">{b.name}</h3>
+              <p className="text-white mt-1 text-left">{b.description}</p>
+            </div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => navigate(`/businesses/${b.id}`)}
+                className="bg-yellow-300/20 text-yellow-300 hover:bg-yellow-300/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
+              >
+                Manage
+              </button>
+              <button
+                onClick={() => deleteBusiness({ variables: { id: b.id } })}
+                className="bg-rose-400/20 text-rose-400 hover:bg-rose-400/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+
+          {/* Deals */}
+          {b.deals.length > 0 && (
+            <div className="flex justify-center flex-wrap gap-2 mt-2">
+              {b.deals.map((deal, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300"
+                >
+                  🎁 {deal}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
-    );
+
+      ))}
+    </div>
+  );
 }
 
 export default function BusinessDashboardPage() {
 
-    return (
-        <div className="min-h-screen p-6 bg-gray-50">
-            <h1 className="text-3xl font-bold mb-6">My Business Dashboard</h1>
-            
-            <div className="flex gap-6">
-                <ManageBusinessInfo />
-                <BusinessCardList />
-            </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 p-6 text-white">
+      <h1 className="text-4xl font-extrabold mb-10 text-white drop-shadow-md">
+        My Business Dashboard
+      </h1>
+      <div className="w-full flex flex-col lg:flex-row gap-8">
+        <div className="lg:w-2/5 h-[372px] bg-white/5 p-6 rounded-2xl shadow-xl">
+          <ManageBusinessInfo />
         </div>
-    );
+        <div className="lg:w-3/5 bg-white/5 p-6 rounded-2xl shadow-xl">
+          <BusinessCardList />
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -9,7 +9,6 @@ const GET_POSTS = gql`
       content
       category
       author {
-        id
         username
       }
     }
@@ -20,109 +19,107 @@ const GET_HELP_REQUESTS = gql`
   query {
     getAllHelpRequests {
       id
-      author {
-        id
-        username
-      }
       description
       location
       isResolved
-      volunteers {
-        id
+      author {
         username
       }
-      createdAt
-      updatedAt
     }
   }
 `;
 
-function formatDateTime(dateString) {
-  if (!dateString) return 'N/A';
-  const parsed = Date.parse(dateString);
-  if (isNaN(parsed)) return 'Invalid Date';
-  return new Date(parsed).toLocaleString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-}
+const GET_BUSINESSES = gql`
+  query {
+    getBusinesses {
+      id
+      name
+      description
+    }
+  }
+`;
 
-function News() {
-  const { loading: loadingPost, error: errorPost, data: dataPost } = useQuery(GET_POSTS);
-  const { loading: loadingRequest, error: errorRequest, data: dataRequest } = useQuery(GET_HELP_REQUESTS);
+export default function News() {
+  const { data: postData } = useQuery(GET_POSTS);
+  const { data: helpData } = useQuery(GET_HELP_REQUESTS);
+  const { data: bizData } = useQuery(GET_BUSINESSES);
+
+  const posts = postData?.getAllPosts || [];
+  const helps = helpData?.getAllHelpRequests || [];
+  const businesses = bizData?.getBusinesses || [];
 
   return (
-    <div className="min-h-screen flex flex-col items-start p-6 w-full max-w-7xl mx-auto bg-white text-gray-900">
-      <h2 className="text-3xl font-bold mb-6">Community Dashboard</h2>
+    <div className="min-h-screen bg-gradient-to-br from-zinc-950 to-black p-8 text-white">
+      <h1 className="text-4xl font-extrabold mb-10 text-center drop-shadow text-white">
+        Community Dashboard
+      </h1>
 
-      <div className="grid grid-cols-2 gap-8 w-full">
-        {/* Community Posts */}
-        <div className="bg-gray-100 rounded-lg shadow-md w-full max-h-[80vh] overflow-y-auto">
-          <div className="sticky top-0 z-20 bg-gray-100 py-6 px-6 shadow-md border-b border-gray-300">
-            <h3 className="text-2xl font-bold">Community Posts</h3>
-          </div>
-          <div className="p-6">
-            {loadingPost ? (
-              <p>Loading...</p>
-            ) : errorPost ? (
-              <p className="text-red-500">Error fetching posts</p>
-            ) : (
-              <div className="space-y-4">
-                {dataPost?.getAllPosts.map(({ id, title, content, category, author }) => (
-                  <div key={id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
-                    <strong className="text-lg text-blue-600">{title}</strong>
-                    <p className="mt-4"><strong>Category:</strong> {category}</p>
-                    <p><strong>Author:</strong> {author?.username || 'Unknown'}</p>
-                    <p className="text-gray-700 mt-2"><strong>Content:</strong> {content}</p>
-                  </div>
-                ))}
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-6 max-w-7xl mx-auto">
+
+        {/* Community Posts Section */}
+        <div className="md:col-span-4 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl mb-4">Community Posts</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto scrollbar-none">
+            {posts.map(post => (
+              <div
+                key={post.id}
+                className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
+              >
+                <h3 className="text-lg font-semibold text-purple-400">{post.title}</h3>
+                <p className="text-sm text-zinc-300"><span className={`text-xs font-medium px-3 py-1 rounded-full 
+        ${post.category === 'News' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'}`}>
+                  {post.category}
+                </span></p>
+                <p className="text-sm text-zinc-300"><strong>Author:</strong> {post.author?.username || 'Unknown'}</p>
+                <p className="text-sm text-zinc-200 mt-2">{post.content}</p>
               </div>
-            )}
+            ))}
           </div>
         </div>
 
-        {/* Help Requests */}
-        <div className="bg-gray-100 rounded-lg shadow-md w-full max-h-[80vh] overflow-y-auto">
-          <div className="sticky top-0 z-20 bg-gray-100 py-6 px-6 shadow-md border-b border-gray-300">
-            <h3 className="text-2xl font-bold">Help Requests</h3>
-          </div>
-          <div className="p-6">
-            {loadingRequest ? (
-              <p>Loading...</p>
-            ) : errorRequest ? (
-              <p className="text-red-500">Error fetching help requests</p>
-            ) : (
-              <div className="space-y-4">
-                {dataRequest?.getAllHelpRequests.map((req) => (
-                  <div key={req.id} className="p-4 bg-white rounded-lg shadow-md border border-gray-200">
-                    <strong className="text-lg text-blue-600">{req.description}</strong>
-                    <p className="mt-4"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
-                    <p><strong>Location:</strong> {req.location || 'N/A'}</p>
-                    <p><strong>Status:</strong> {req.isResolved ? 'Resolved' : 'Pending'}</p>
-                    <p>
-                      <strong>Volunteers:</strong>{" "}
-                      {req.volunteers?.length > 0
-                        ? req.volunteers.map((v) => v.username).join(', ')
-                        : 'None'}
-                    </p>
-                    <p><strong>Created At:</strong> {formatDateTime(req.createdAt)}</p>
-                    {req.updatedAt && (
-                      <p className="text-sm text-gray-500">
-                        <strong>Updated At:</strong> {formatDateTime(req.updatedAt)}
-                      </p>
-                    )}
-                  </div>
-                ))}
+        {/* Help Requests Section */}
+        <div className="md:col-span-2 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl">
+          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl mb-4">
+            Help Requests
+          </h2>
+
+          <div className="space-y-4 max-h-[300px] overflow-y-auto scrollbar-none">
+            {helps.map(req => (
+              <div
+                key={req.id}
+                className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
+              >
+                <h3 className="text-lg text-purple-400 font-semibold">{req.description}</h3>
+                <p className="text-sm text-zinc-300"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
+                <p className="text-sm text-zinc-300"><strong>Location:</strong> {req.location || 'N/A'}</p>
+                <p className="text-sm text-zinc-300"><span className={`text-xs font-medium px-3 py-1 rounded-full
+        ${req.isResolved
+                    ? 'bg-green-500/20 text-green-300'
+                    : 'bg-yellow-500/20 text-yellow-300'}`}>
+                  {req.isResolved ? 'Resolved' : 'Pending'}
+                </span></p>
               </div>
-            )}
+            ))}
           </div>
         </div>
+
+        {/* Business Listings Section */}
+        <div className="md:col-span-6 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl mt-4">
+          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl mb-4">Explore new businesses near you</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {businesses.map(biz => (
+              <div
+                key={biz.id}
+                className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
+              >
+                <h3 className="text-lg font-semibold text-purple-400">{biz.name}</h3>
+                <p className="text-sm text-zinc-200 mt-2">{biz.description?.slice(0, 80) || 'No description'}...</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   );
 }
-
-export default News;

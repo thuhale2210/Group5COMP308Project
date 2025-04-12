@@ -38,29 +38,44 @@ export default function ReviewManagementPage({ businessId }) {
     };
 
     return (
-        <div className="space-y-4">
-            {data?.getReviews.map((r) => (
-                <div key={r.id} className="border p-2 rounded">
-                    <p>{r.comment}</p>
-                    {r.businessResponse?.text ? (
-                        <p className="text-sm text-gray-600">Response: {r.businessResponse.text}</p>
-                    ) : (
-                        <button onClick={() => setActiveReview(r.id)} className="text-blue-500">Respond</button>
-                    )}
-                </div>
-            ))}
-
-            {activeReview && (
-                <div className="mt-4">
-                    <textarea
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        className="w-full p-2 border"
-                        placeholder="Type your response..."
-                    />
-                    <button onClick={handleRespond} className="mt-2 px-3 py-1 bg-green-500 text-white rounded">Send</button>
-                </div>
-            )}
+      <div className="space-y-4 mt-6">
+      {data?.getReviews.map((r) => (
+        <div key={r.id} className="bg-zinc-900 p-4 rounded-xl border border-zinc-800 shadow">
+          <p className="text-zinc-300">{r.comment}</p>
+    
+          {r.businessResponse?.text ? (
+            <p className="text-sm text-emerald-400 mt-2 border-l-4 border-emerald-500 pl-3">
+              <strong className="text-emerald-300">Response:</strong> {r.businessResponse.text}
+            </p>
+          ) : (
+            <button
+              onClick={() => setActiveReview(r.id)}
+              className="mt-3 text-sm text-blue-400 hover:underline transition"
+            >
+              Respond
+            </button>
+          )}
         </div>
+      ))}
+    
+      {activeReview && (
+        <div className="mt-6 bg-zinc-800 p-4 rounded-xl border border-zinc-700">
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            className="w-full p-3 rounded-md bg-zinc-900 text-white border border-zinc-700 placeholder-zinc-500 resize-none"
+            placeholder="Type your response..."
+            rows={3}
+          />
+          <button
+            onClick={handleRespond}
+            className="mt-3 bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-md transition"
+          >
+            Send
+          </button>
+        </div>
+      )}
+    </div>
+    
     );
 }

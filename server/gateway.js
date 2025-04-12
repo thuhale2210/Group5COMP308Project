@@ -8,10 +8,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 
 const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "http://localhost:3002",
-  "http://localhost:3003",
+  "https://client-user-app.onrender.com",
+  "https://client-community-app.onrender.com",
+  "https://community-engagement-app.onrender.com", // main shell app
 ];
 
 const app = express();
@@ -24,7 +23,6 @@ app.use(express.urlencoded({ extended: true }));
 class AuthenticatedDataSource extends RemoteGraphQLDataSource {
   willSendRequest({ request, context }) {
     if (context.token) {
-      console.log("✅ Setting Authorization header:", context.token);
       request.http.headers.set("authorization", `Bearer ${context.token}`);
     }
   }
@@ -33,9 +31,10 @@ class AuthenticatedDataSource extends RemoteGraphQLDataSource {
 const gateway = new ApolloGateway({
   supergraphSdl: new IntrospectAndCompose({
     subgraphs: [
-      { name: "auth-service", url: "http://localhost:4001/graphql" },
-      { name: "community-engagement-service", url: "http://localhost:4002/graphql" },
-      { name: 'business-event-service', url: 'http://localhost:4003/graphql' },
+      { name: "auth-service", url: process.env.AUTH_SERVICE_URL },
+      { name: "community-engagement-service", url: process.env.COMMUNITY_SERVICE_URL },
+      { name: "business-event-service", url: process.env.BUSINESS_SERVICE_URL },
+      { name: "ai-microservice", url: process.env.AI_SERVICE_URL },
     ],
   }),
   buildService({ url }) {
@@ -53,7 +52,6 @@ const server = new ApolloServer({
           async willSendRequest({ request, context }) {
             if (context.token) {
               request.http.headers.set("authorization", `Bearer ${context.token}`);
-              console.log("✅ Forwarding token to subgraph:", context.token);
             } else {
               console.warn("❌ No token found in context at gateway!");
             }

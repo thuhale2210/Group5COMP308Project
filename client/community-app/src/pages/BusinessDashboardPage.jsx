@@ -113,35 +113,46 @@ function BusinessCardList() {
       <div className="space-y-6">
       <h2 className="text-2xl font-semibold text-white">Your Businesses</h2>
       {data?.getBusinessesByOwner?.map((b) => (
-        <div key={b.id} className="bg-white/5 backdrop-blur-md p-2 rounded-2xl shadow-lg transition">
-          <div className="flex justify-between items-start">
-            <div>
-              <h3 className="text-xl font-bold text-purple-400">{b.name}</h3>
-              <p className="text-white-400 mt-1">{b.description}</p>
-              {b.deals.length > 0 && (
-                <ul className="text-xs font-medium px-3 py-1 rounded-full bg-purple-500/20 text-purple-300">
-                  {b.deals.map((deal, idx) => (
-                    <li key={idx}>🎁 {deal}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div className="flex gap-2 pt-1">
-              <button
-                onClick={() => navigate(`/businesses/${b.id}`)}
-                className="bg-yellow-300/20 text-yellow-300 hover:bg-yellow-300/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
-              >
-                Manage
-              </button>
-              <button
-                onClick={() => deleteBusiness({ variables: { id: b.id } })}
-                className="bg-rose-400/20 text-rose-400 hover:bg-rose-400/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
-              >
-                Delete
-              </button>
-            </div>
+        <div key={b.id} className="bg-white/5 backdrop-blur-md p-4 rounded-2xl shadow-lg transition">
+        <div className="flex justify-between items-start gap-4">
+          {/* LEFT: Business Info - aligned to the left */}
+          <div>
+            <h3 className="text-xl font-bold text-purple-400">{b.name}</h3>
+            <p className="text-white mt-1">{b.description}</p>
+          </div>
+      
+          {/* RIGHT: Manage & Delete buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => navigate(`/businesses/${b.id}`)}
+              className="bg-yellow-300/20 text-yellow-300 hover:bg-yellow-300/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
+            >
+              Manage
+            </button>
+            <button
+              onClick={() => deleteBusiness({ variables: { id: b.id } })}
+              className="bg-rose-400/20 text-rose-400 hover:bg-rose-400/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
+            >
+              Delete
+            </button>
           </div>
         </div>
+      
+        {/* Centered deals */}
+        {b.deals.length > 0 && (
+          <div className="flex justify-center flex-wrap gap-2 mt-4">
+            {b.deals.map((deal, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300"
+              >
+                🎁 {deal}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+      
       ))}
     </div>
     );

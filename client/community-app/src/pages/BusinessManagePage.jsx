@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { gql, useQuery, useMutation } from '@apollo/client';
+import { StarIcon } from '@heroicons/react/24/solid';
+import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
 
 const GET_BUSINESS = gql`
   query($id: ID!) {
@@ -118,19 +120,16 @@ export default function BusinessManagePage() {
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => navigate('/business-dashboard')}
-            className="text-sm text-purple-300 hover:underline mb-6 block"
+            className="text-sm bg-zinc-950 text-purple-300 hover:underline mb-6 block"
           >
             ← Back to Dashboard
           </button>
     
           <h1 className="text-3xl font-extrabold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 drop-shadow-md text-center">
-            Manage: {business.name}
+            {business.name}
           </h1>
     
-          <h2 className="text-center text-fuchsia-300 font-semibold text-lg mb-1">
-            Business Description
-          </h2>
-          <p className="text-center text-zinc-400 italic mb-6">{business.description}</p>
+          <p className="text-center text-white mb-6">{business.description}</p>
     
           <div className="flex justify-center gap-4 mb-6">
             <button
@@ -158,23 +157,22 @@ export default function BusinessManagePage() {
           {/* DEALS SECTION */}
           {activeTab === 'deals' && (
             <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl space-y-6">
-              <h2 className="text-xl font-semibold text-purple-300">Deals</h2>
+              <h2 className="text-xl font-semibold text-white-300">Deals</h2>
     
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex gap-2 mt-3">
                 <input
-                  className="flex-1 p-3 rounded-xl bg-zinc-800 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="bg-zinc-700/70 text-white placeholder-zinc-400 p-2 rounded-lg flex-1 transition focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   value={deal}
                   onChange={(e) => setDeal(e.target.value)}
                   placeholder="Add new deal..."
                 />
                 <button
                   onClick={handleAddDeal}
-                  className="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white hover:brightness-110 shadow-md transition"
+                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:brightness-110 transition text-white px-4 py-2 rounded-lg shadow-sm"
                 >
                   Add Deal
                 </button>
               </div>
-    
               <ul className="space-y-3">
                 {business.deals.map((d, idx) => (
                   <li
@@ -184,7 +182,7 @@ export default function BusinessManagePage() {
                     <span className="text-sm">🎁 {d}</span>
                     <button
                       onClick={() => removeDeal({ variables: { businessId: id, deal: d } })}
-                      className="text-rose-400 hover:text-rose-300 text-sm"
+                      className="bg-rose-400/20 text-rose-400 hover:bg-rose-400/30 px-4 py-1.5 text-sm font-medium rounded-full transition shadow-sm"
                     >
                       Remove
                     </button>
@@ -197,7 +195,7 @@ export default function BusinessManagePage() {
           {/* REVIEWS SECTION */}
           {activeTab === 'reviews' && (
             <div className="bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl space-y-6 mt-6">
-              <h2 className="text-xl font-semibold text-purple-300">Customer Reviews</h2>
+              <h2 className="text-xl font-semibold text-white-300">Customer Reviews</h2>
     
               {reviewData?.getReviews.length === 0 ? (
                 <p className="text-zinc-400 italic">No reviews yet.</p>
@@ -205,7 +203,14 @@ export default function BusinessManagePage() {
                 <ul className="space-y-6">
                   {reviewData.getReviews.map((review) => (
                     <li key={review.id} className="p-4 rounded-2xl bg-zinc-800 shadow-md space-y-3">
-                      <p className="text-lg font-semibold text-yellow-400">⭐ {review.rating}</p>
+                      <div className="flex items-center gap-1 mb-1">
+                        {[1, 2, 3, 4, 5].map((star) => {
+                          const Icon = star <= Number(review.rating) ? StarIcon : StarOutline;
+                          return (
+                            <Icon key={star} className="w-5 h-5 text-yellow-400" />
+                          );
+                        })}
+                      </div>
                       <p className="text-zinc-300">{review.comment}</p>
                       {review.sentiment && (
                         <span

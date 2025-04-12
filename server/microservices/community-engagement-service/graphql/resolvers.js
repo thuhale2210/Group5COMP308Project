@@ -23,10 +23,17 @@ const resolvers = {
   },
 
   Mutation: {
+<<<<<<< HEAD
     // createPost: async (_, { title, content, category }, { user }) => {
     //   if (!user?.id) throw new Error('Unauthorized');
     //   return await new CommunityPost({ author: user.id, title, content, category }).save();
     // },
+=======
+    createPost: async (_, { title, content, category }, { user }) => {
+      if (!user?.id) throw new Error('Unauthorized');
+      return await new CommunityPost({ author: user.id, title, content, category }).save();
+    },
+>>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a
 
     createPost: async (_, { title, content, category }, { user }) => {
       if (!user?.id) throw new Error('Unauthorized');
@@ -57,7 +64,11 @@ const resolvers = {
     
       return await CommunityPost.findByIdAndUpdate(
         id,
+<<<<<<< HEAD
         { title, content, category, aiSummary: summary, updatedAt: new Date() },
+=======
+        { title, content, category, updatedAt: new Date() },
+>>>>>>> e2511e7c756653bda3688db8031806bffaf43c6a
         { new: true }
       );
     },

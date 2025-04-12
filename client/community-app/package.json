@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite  --port=3002 --strictPort",
-    "build": "vite build",
+    "build": "npx vite build",
     "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview --port=3002 --strictPort",
     "deploy": "npm run build && npm run preview"
@@ -30,7 +30,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.5.3",
-    "tailwindcss": "^3.4.17",
-    "vite": "^5.1.0"
+    "tailwindcss": "^3.4.17"
   }
 }

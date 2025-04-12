@@ -21,7 +21,6 @@ const GET_REVIEWS = gql`
       id
       rating
       comment
-      sentiment
       businessResponse {
         text
         respondedAt

@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const generateSummary = async (text) => {
   try {
-    const response = await axios.post('http://localhost:5003/summarize', { text });
+    const response = await axios.post('https://server-gemini-ai-microservice.onrender.com/summarize', { text });
     return response.data.summary;
   } catch (err) {
     console.error('❌ Summary generation failed:', err.message);

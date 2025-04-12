@@ -34,7 +34,6 @@ const gateway = new ApolloGateway({
       { name: "auth-service", url: process.env.AUTH_SERVICE_URL },
       { name: "community-engagement-service", url: process.env.COMMUNITY_SERVICE_URL },
       { name: "business-event-service", url: process.env.BUSINESS_SERVICE_URL },
-      { name: "ai-microservice", url: process.env.AI_SERVICE_URL },
     ],
   }),
   buildService({ url }) {

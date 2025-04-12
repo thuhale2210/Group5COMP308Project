@@ -8,7 +8,7 @@ import BusinessPage from '../src/pages/BusinessPage';
 import { gql, useMutation } from '@apollo/client';
 import BusinessDashboardPage from './pages/BusinessDashboardPage';
 import BusinessManagePage from './pages/BusinessManagePage';
-import Logo from './assets/logo.png';
+import Logo from '../public/logo.png';
 
 // Apollo Client
 const client = new ApolloClient({
@@ -42,7 +42,7 @@ function App() {
           <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between">
             <Link
               to="/"
-              className="text-fuchsia-400 text-2xl font-bold tracking-wide hover:text-fuchsia-300 no-underline flex items-center"
+              className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl text-2xl font-bold tracking-wide no-underline flex items-center"
             >
               <img src={Logo} alt="Logo" className="h-8 w-8 mr-2" />
               Community Engagement App

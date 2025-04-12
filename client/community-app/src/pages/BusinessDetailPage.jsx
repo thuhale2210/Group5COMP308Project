@@ -9,9 +9,8 @@ export default function BusinessDetailPage({ business, onBack }) {
         {/* Back Button */}
         <button
           onClick={onBack}
-          className="text-sm text-blue-400 hover:underline transition"
-        >
-          ← Back
+          className="text-sm bg-zinc-950 text-purple-300 hover:bg-zinc-950/10 mb-6 block">
+          ← Back to Listings
         </button>
 
         {/* Business Info */}
@@ -21,16 +20,22 @@ export default function BusinessDetailPage({ business, onBack }) {
         </div>
 
         {/* Deals Section */}
-        <div>
-          <h3 className="text-lg font-semibold text-zinc-100 mb-2">Deals:</h3>
-          <ul className="list-disc pl-5 text-zinc-300 space-y-1">
-            {business.deals?.map((d, i) => (
-              <li key={i} className="leading-relaxed">
-                <span className="text-orange-400">🎁</span> {d}
-              </li>
-            ))}
-          </ul>
-        </div>
+        {business.deals?.length > 0 && (
+          <div>
+            <h3 className="text-lg font-semibold text-zinc-100 mb-2">Don't miss these deals!</h3>
+            <div className="list-disc pl-5 text-zinc-300 space-y-1">
+              {business.deals.map((d, i) => (
+                <div key={i} className="leading-relaxed">
+                  <span
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300"
+                  >
+                    🎁 {d}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Review Form */}
         <div>

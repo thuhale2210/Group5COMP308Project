@@ -58,15 +58,18 @@ export default function News() {
 
         {/* Community Posts Section */}
         <div className="md:col-span-4 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl">
-          <h2 className="text-2xl font-bold text-cyan-300 mb-4">Community Posts</h2>
+          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl mb-4">Community Posts</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto scrollbar-none">
             {posts.map(post => (
               <div
                 key={post.id}
                 className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
               >
-                <h3 className="text-lg font-semibold text-blue-400">{post.title}</h3>
-                <p className="text-sm text-zinc-300"><strong>Category:</strong> {post.category}</p>
+                <h3 className="text-lg font-semibold text-purple-400">{post.title}</h3>
+                <p className="text-sm text-zinc-300"><span className={`text-xs font-medium px-3 py-1 rounded-full 
+        ${post.category === 'News' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'}`}>
+                  {post.category}
+                </span></p>
                 <p className="text-sm text-zinc-300"><strong>Author:</strong> {post.author?.username || 'Unknown'}</p>
                 <p className="text-sm text-zinc-200 mt-2">{post.content}</p>
               </div>
@@ -76,17 +79,25 @@ export default function News() {
 
         {/* Help Requests Section */}
         <div className="md:col-span-2 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl">
-          <h2 className="text-2xl font-bold text-fuchsia-400 mb-4">Help Requests</h2>
+          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl mb-4">
+            Help Requests
+          </h2>
+
           <div className="space-y-4 max-h-[300px] overflow-y-auto scrollbar-none">
             {helps.map(req => (
               <div
                 key={req.id}
                 className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
               >
-                <h3 className="text-lg text-emerald-400 font-semibold">{req.description}</h3>
+                <h3 className="text-lg text-purple-400 font-semibold">{req.description}</h3>
                 <p className="text-sm text-zinc-300"><strong>Author:</strong> {req.author?.username || 'Unknown'}</p>
                 <p className="text-sm text-zinc-300"><strong>Location:</strong> {req.location || 'N/A'}</p>
-                <p className="text-sm text-zinc-300"><strong>Status:</strong> {req.isResolved ? 'Resolved' : 'Pending'}</p>
+                <p className="text-sm text-zinc-300"><span className={`text-xs font-medium px-3 py-1 rounded-full
+        ${req.isResolved
+                    ? 'bg-green-500/20 text-green-300'
+                    : 'bg-yellow-500/20 text-yellow-300'}`}>
+                  {req.isResolved ? 'Resolved' : 'Pending'}
+                </span></p>
               </div>
             ))}
           </div>
@@ -94,14 +105,14 @@ export default function News() {
 
         {/* Business Listings Section */}
         <div className="md:col-span-6 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-xl mt-4">
-          <h2 className="text-2xl font-bold text-purple-400 mb-4">Explore new businesses near you</h2>
+          <h2 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl mb-4">Explore new businesses near you</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {businesses.map(biz => (
               <div
                 key={biz.id}
                 className="bg-white/10 backdrop-blur-md p-4 rounded-xl shadow-md hover:shadow-lg transition-transform hover:-translate-y-1"
               >
-                <h3 className="text-lg font-semibold text-cyan-300">{biz.name}</h3>
+                <h3 className="text-lg font-semibold text-purple-400">{biz.name}</h3>
                 <p className="text-sm text-zinc-200 mt-2">{biz.description?.slice(0, 80) || 'No description'}...</p>
               </div>
             ))}

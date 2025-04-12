@@ -13,6 +13,7 @@ const GET_POSTS = gql`
         id
         username
       }
+      createdAt
       replies {
         author {
           id
@@ -133,7 +134,7 @@ function CommunityPost() {
     <div className="min-h-screen flex p-6 bg-zinc-950 text-white gap-8 font-sans">
       {/* Create Post Panel */}
       <div className="w-2/5 max-w-md bg-white/5 backdrop-blur-lg p-6 rounded-2xl shadow-xl sticky top-24 self-start">
-        <h2 className="text-2xl font-semibold text-white mb-4">Create a New Post</h2>
+        <h2 className="text-2xl font-semibold text-white mt-2 mb-4">Create a New Post</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             className="w-full p-3 bg-zinc-800/70 text-white placeholder-zinc-400 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -166,7 +167,7 @@ function CommunityPost() {
         <div className="sticky top-0 z-10 px-6 mt-10">
           <h3 className="text-2xl font-semibold text-white">Community Posts</h3>
         </div>
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-4">
           {loading ? (
             <p className="text-zinc-400">Loading...</p>
           ) : error ? (
@@ -176,9 +177,9 @@ function CommunityPost() {
               <div key={post.id} className="bg-white/5 backdrop-blur-md p-4 rounded-2xl shadow-md">
 
                 {/* Title + Category + Actions */}
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <div className="flex gap-3 mb-1">
+                <div className="flex justify-between items-start mb-2 text-left">
+                  <div className="text-left">
+                    <div className="flex gap-3 mb-1 items-center">
                       <h4 className="text-xl font-bold text-purple-400">{post.title}</h4>
                       <span className={`text-xs font-medium px-3 py-1 rounded-full 
         ${post.category === 'News' ? 'bg-blue-500/20 text-blue-300' : 'bg-purple-500/20 text-purple-300'}`}>
@@ -186,8 +187,17 @@ function CommunityPost() {
                       </span>
                     </div>
                     <p className="text-sm text-zinc-400">{post.author?.username || 'Unknown'}</p>
+                    <p className="text-sm text-zinc-500">
+                      {post.createdAt && new Date(post.createdAt).toLocaleString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </p>
                   </div>
 
+                  {/* Action Buttons */}
                   <div className="flex gap-2 pt-1">
                     <button
                       onClick={() => handleEdit(post)}
@@ -204,19 +214,18 @@ function CommunityPost() {
                   </div>
                 </div>
 
-                {/* AI Summary */}
                 {post.aiSummary && (
-                  <p className="text-sm italic text-indigo-300 bg-white/10 p-3 rounded-lg mb-3">
+                  <p className="text-sm italic text-indigo-300 bg-white/10 p-3 rounded-lg mb-3 text-left">
                     <strong>AI Summary:</strong> {post.aiSummary}
                   </p>
                 )}
 
                 {/* Post Content */}
-                <p className="text-white mb-4 whitespace-pre-wrap">{post.content}</p>
+                <p className="text-white mb-4 whitespace-pre-wrap text-left">{post.content}</p>
 
                 {/* Replies */}
                 <div>
-                  <h5 className="text-sm font-semibold text-zinc-300 mb-2">Replies:</h5>
+                  <h5 className="text-sm font-semibold text-zinc-300 mb-2 text-left">Replies:</h5>
                   {post.replies?.map((r, i) => (
                     <div
                       key={i}
@@ -243,7 +252,7 @@ function CommunityPost() {
                           </p>
                         </div>
 
-                        {/* Reply Action Buttons (Fade in on hover) */}
+                        {/* Reply Action Buttons */}
                         <div className="flex gap-2 text-xs text-zinc-400 transition">
                           {editingReply[`${post.id}-${i}`] ? (
                             <>

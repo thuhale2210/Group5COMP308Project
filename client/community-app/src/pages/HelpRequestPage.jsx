@@ -119,7 +119,7 @@ function HelpRequestPage() {
     <div className="min-h-screen flex p-6 bg-zinc-950 text-white gap-8 font-sans">
       {/* Form */}
       <div className="w-2/5 max-w-md bg-white/5 backdrop-blur-lg p-6 rounded-2xl shadow-xl sticky top-24 self-start">
-        <h2 className="text-2xl font-semibold text-white mb-4">
+        <h2 className="text-2xl font-semibold text-white mt-2 mb-4">
           {editingId ? 'Edit Help Request' : 'Request Help'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -152,7 +152,7 @@ function HelpRequestPage() {
           <h3 className="text-2xl font-semibold text-white">Help Requests</h3>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-6 space-y-4">
           {loading ? (
             <p className="text-zinc-400">Loading...</p>
           ) : error ? (
@@ -162,14 +162,13 @@ function HelpRequestPage() {
               <div key={req.id} className="bg-white/5 backdrop-blur-md p-4 rounded-2xl shadow-md space-y-4">
                 {/* Title + Badge + Action Buttons */}
                 <div className="flex justify-between items-start">
-                  <div className="flex flex-col">
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-col text-left">
+                    <div className="flex items-center gap-2">
                       <p className="text-xl font-bold text-purple-400">{req.description}</p>
                       <span className={`text-xs font-medium px-3 py-1 rounded-full
-          ${req.isResolved
+        ${req.isResolved
                           ? 'bg-green-500/20 text-green-300'
-                          : 'bg-yellow-500/20 text-yellow-300'
-                        }`}>
+                          : 'bg-yellow-500/20 text-yellow-300'}`}>
                         {req.isResolved ? 'Resolved' : 'Pending'}
                       </span>
                     </div>
@@ -201,7 +200,7 @@ function HelpRequestPage() {
                 </div>
 
                 {/* Meta Info */}
-                <div className="text-zinc-300 space-y-1">
+                <div className="text-zinc-300 space-y-1 text-left">
                   <p><strong>Location:</strong> {req.location || 'N/A'}</p>
                   <p>
                     <strong>Volunteers:</strong>{' '}
@@ -210,7 +209,6 @@ function HelpRequestPage() {
                       : 'None'}
                   </p>
                 </div>
-
 
                 {!req.isResolved && (
                   <button

@@ -51,9 +51,12 @@ export default function ReviewForm({ businessId }) {
                 key={star}
                 type="button"
                 onClick={() => setRating(star)}
-                className="text-yellow-400 hover:scale-110 transition"
+                className="bg-transparent p-1 rounded-md focus:outline-none hover:scale-110 transition"
               >
-                <Icon className="w-6 h-6" />
+                <Icon
+                  className={`w-6 h-6 ${star <= rating ? 'text-yellow-400' : 'text-zinc-500'
+                    }`}
+                />
               </button>
             );
           })}

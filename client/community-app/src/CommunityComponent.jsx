@@ -44,7 +44,6 @@ function App() {
               to="/"
               className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-500 drop-shadow-xl text-2xl font-bold tracking-wide no-underline flex items-center"
             >
-              <img src={Logo} alt="Logo" className="h-8 w-8 mr-2" />
               Community Engagement App
             </Link>
             <div className="flex space-x-6 items-center">

@@ -257,7 +257,7 @@ function CommunityPost() {
                           {editingReply[`${post.id}-${i}`] ? (
                             <>
                               <button
-                                className="text-purple-400"
+                                className="text-purple-400 hover:text-purple-300 px-3 py-1 rounded-lg bg-transparent"
                                 onClick={() => {
                                   editReply({
                                     variables: {
@@ -272,7 +272,7 @@ function CommunityPost() {
                                 Save
                               </button>
                               <button
-                                className="text-gray-300"
+                                className="text-gray-300 hover:text-gray-200 px-3 py-1 rounded-lg bg-transparent"
                                 onClick={() =>
                                   setEditingReply((prev) => ({ ...prev, [`${post.id}-${i}`]: null }))
                                 }

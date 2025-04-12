@@ -8,17 +8,19 @@ export default defineConfig({
     federation({
       name: 'shellApp',
       remotes: {
-        userApp: 'http://localhost:3001/assets/remoteEntry.js',
-        communityApp: 'http://localhost:3002/assets/remoteEntry.js',
+        userApp: 'https://client-user-app.onrender.com/assets/remoteEntry.js',
+        communityApp: 'https://client-community-app.onrender.com/assets/remoteEntry.js',
       },
       shared: ['react', 'react-dom', '@apollo/client', 'graphql'],
     }),
-  ], server: {
+  ],
+  server: {
     port: 3000,
     cors: true,
     strictPort: true,
   },
   build: {
     target: 'esnext',
+    outDir: 'dist',
   },
 });

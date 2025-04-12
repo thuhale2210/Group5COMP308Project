@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3001 --strictPort",
-    "build": "vite build",
-    "preview": "vite preview",
-    "start": "serve -s dist -l $PORT"
+    "build": "npx vite build",
+    "lint": "eslint src --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview --port=3001 --strictPort",
+    "deploy": "npm run build",
+    "start": "serve -s dist -l 0.0.0.0:$PORT"
   },
   "dependencies": {
     "@apollo/client": "^3.9.5",

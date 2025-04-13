@@ -99,6 +99,7 @@ pipeline {
                             PATH=/opt/homebrew/bin:$PATH sonar-scanner \
                                 -Dsonar.projectKey=group5-comp308-project \
                                 -Dsonar.sources=server,client \
+                                -Dsonar.exclusions=**/venv/**,**/node_modules/** \
                                 -Dsonar.host.url=http://localhost:9000 \
                                 -Dsonar.login=$SONAR_TOKEN \
                                 -Dsonar.scm.disabled=true \

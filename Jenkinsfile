@@ -93,19 +93,17 @@ pipeline {
 
         stage('Code Analysis (SonarQube)') {
             steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                    withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
-                        withSonarQubeEnv('SonarScanner') {
-                            sh '''
-                                sonar-scanner \
-                                    -Dsonar.projectKey=group5-comp308-project \
-                                    -Dsonar.sources=server,client \
-                                    -Dsonar.host.url=http://localhost:9000 \
-                                    -Dsonar.login=$SONAR_TOKEN \
-                                    -Dsonar.scm.disabled=true \
-                                    -Dsonar.log.level=DEBUG
-                            '''
-                        }
+                withCredentials([string(credentialsId: 'sonarqube-token', variable: 'SONAR_TOKEN')]) {
+                    withSonarQubeEnv('SonarScanner') {
+                        sh '''
+                            PATH=/opt/homebrew/bin:$PATH sonar-scanner \
+                                -Dsonar.projectKey=group5-comp308-project \
+                                -Dsonar.sources=server,client \
+                                -Dsonar.host.url=http://localhost:9000 \
+                                -Dsonar.login=$SONAR_TOKEN \
+                                -Dsonar.scm.disabled=true \
+                                -Dsonar.log.level=DEBUG
+                        '''
                     }
                 }
             }

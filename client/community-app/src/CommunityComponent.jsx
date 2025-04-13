@@ -1,12 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import { ApolloProvider, ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloProvider, ApolloClient, InMemoryCache, gql, useMutation } from '@apollo/client';
 import CommunityPost from '../src/pages/CommunityPostPage';
 import HelpRequests from '../src/pages/HelpRequestPage';
 import News from '../src/pages/NewsPage';
 import BusinessPage from '../src/pages/BusinessPage';
 import { Container, Navbar, Nav } from 'react-bootstrap';
-import { gql, useMutation } from '@apollo/client';
 import BusinessDashboardPage from './pages/BusinessDashboardPage';
 import BusinessManagePage from './pages/BusinessManagePage';
 
